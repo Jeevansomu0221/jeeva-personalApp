@@ -1,699 +1,276 @@
-import React, { useState, useEffect } from 'react';
+// ScreenTime.tsx
+import React, { useState, useEffect, useRef } from 'react';
 import './ScreenTime.css';
 
-type AppUsage = {
+interface AppUsage {
   id: string;
   name: string;
-  category: string;
   icon: string;
-  timeSpent: number; // in minutes
-  lastUsed: string;
-  dailyLimit?: number; // optional daily limit in minutes
-};
-
-type Note = {
-  id: string;
-  title: string;
-  content: string;
-  type: 'idea' | 'story' | 'general';
-  createdAt: string;
-  lastEdited: string;
-  tags: string[];
   color: string;
-};
-
-type TimeRange = 'today' | 'week' | 'month';
+  timeSpent: number; // in minutes
+  category: string;
+  packageName?: string; // For real tracking
+}
 
 interface ScreenTimeProps {
   onBack: () => void;
 }
 
 const ScreenTime: React.FC<ScreenTimeProps> = ({ onBack }) => {
-  const [activeTab, setActiveTab] = useState<'screentime' | 'notes'>('screentime');
-  const [timeRange, setTimeRange] = useState<TimeRange>('today');
-  const [appUsage, setAppUsage] = useState<AppUsage[]>([
-    { id: '1', name: 'Chrome', category: 'Productivity', icon: '🌐', timeSpent: 120, lastUsed: '2024-12-10T10:30:00', dailyLimit: 180 },
-    { id: '2', name: 'Slack', category: 'Communication', icon: '💬', timeSpent: 85, lastUsed: '2024-12-10T09:45:00', dailyLimit: 120 },
-    { id: '3', name: 'VSCode', category: 'Development', icon: '💻', timeSpent: 180, lastUsed: '2024-12-10T11:15:00' },
-    { id: '4', name: 'Spotify', category: 'Entertainment', icon: '🎵', timeSpent: 95, lastUsed: '2024-12-10T08:20:00', dailyLimit: 60 },
-    { id: '5', name: 'Instagram', category: 'Social', icon: '📸', timeSpent: 145, lastUsed: '2024-12-10T12:10:00', dailyLimit: 90 },
-    { id: '6', name: 'Figma', category: 'Design', icon: '🎨', timeSpent: 75, lastUsed: '2024-12-10T14:30:00' },
-    { id: '7', name: 'Notion', category: 'Productivity', icon: '📝', timeSpent: 45, lastUsed: '2024-12-10T13:45:00' },
-    { id: '8', name: 'Messages', category: 'Communication', icon: '📱', timeSpent: 60, lastUsed: '2024-12-10T15:20:00' },
-  ]);
+  const [showTimerModal, setShowTimerModal] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<AppUsage | null>(null);
+  const [timerDuration, setTimerDuration] = useState(60); // in minutes
+  const [totalTimeToday, setTotalTimeToday] = useState(0);
+  const [apps, setApps] = useState<AppUsage[]>([]);
+  const [activeApp, setActiveApp] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  
+  const activeAppRef = useRef<string | null>(null);
+  const updateIntervalRef = useRef<number | null>(null);
 
-  const [notes, setNotes] = useState<Note[]>([
-    { id: '1', title: 'App Idea', content: 'Create a habit tracking app with gamification elements and social features.', type: 'idea', createdAt: '2024-12-08', lastEdited: '2024-12-10', tags: ['app', 'productivity', 'gamification'], color: '#FF6B6B' },
-    { id: '2', title: 'Short Story Start', content: 'The city slept under a blanket of stars, unaware of the whispers in the digital winds...', type: 'story', createdAt: '2024-12-05', lastEdited: '2024-12-09', tags: ['fiction', 'sci-fi'], color: '#4ECDC4' },
-    { id: '3', title: 'Project Thoughts', content: 'Consider implementing dark mode and better accessibility features.', type: 'general', createdAt: '2024-12-01', lastEdited: '2024-12-10', tags: ['design', 'accessibility'], color: '#45B7D1' },
-  ]);
+  // Simulate real installed apps
+  const simulatedApps: AppUsage[] = [
+    { id: '1', name: 'Instagram', icon: '📸', color: '#E1306C', timeSpent: 0, category: 'Social' },
+    { id: '2', name: 'DuckDuckGo', icon: '🦆', color: '#DE5833', timeSpent: 0, category: 'Browser' },
+    { id: '3', name: 'Chess', icon: '♟️', color: '#000000', timeSpent: 0, category: 'Games' },
+    { id: '4', name: 'WhatsApp', icon: '💬', color: '#25D366', timeSpent: 0, category: 'Social' },
+    { id: '5', name: 'YouTube', icon: '🎥', color: '#FF0000', timeSpent: 0, category: 'Entertainment' },
+    { id: '6', name: 'Twitter/X', icon: '🐦', color: '#000000', timeSpent: 0, category: 'Social' },
+    { id: '7', name: 'Chrome', icon: '🌐', color: '#4285F4', timeSpent: 0, category: 'Browser' },
+    { id: '8', name: 'Spotify', icon: '🎵', color: '#1DB954', timeSpent: 0, category: 'Music' },
+    { id: '9', name: 'Messages', icon: '💬', color: '#34C759', timeSpent: 0, category: 'Communication' },
+    { id: '10', name: 'Phone', icon: '📞', color: '#5856D6', timeSpent: 0, category: 'Communication' },
+    { id: '11', name: 'Photos', icon: '🖼️', color: '#FF2D55', timeSpent: 0, category: 'Media' },
+    { id: '12', name: 'Camera', icon: '📷', color: '#5AC8FA', timeSpent: 0, category: 'Media' },
+    { id: '13', name: 'Settings', icon: '⚙️', color: '#8E8E93', timeSpent: 0, category: 'System' },
+    { id: '14', name: 'App Store', icon: '📱', color: '#007AFF', timeSpent: 0, category: 'Store' },
+    { id: '15', name: 'Maps', icon: '🗺️', color: '#FF9500', timeSpent: 0, category: 'Navigation' },
+  ];
 
-  const [newNote, setNewNote] = useState({
-    title: '',
-    content: '',
-    type: 'general' as Note['type'],
-    tags: [] as string[],
-    color: '#45B7D1'
-  });
-
-  const [newTag, setNewTag] = useState('');
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [dailyLimitModal, setDailyLimitModal] = useState<{ show: boolean; appId: string; limit: number }>({ 
-    show: false, 
-    appId: '', 
-    limit: 0 
-  });
-
-  // Mock function to simulate app usage tracking
+  // Initialize with saved data or simulated data
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Simulate some apps getting more usage
-      setAppUsage(prev => prev.map(app => {
-        if (Math.random() > 0.7) {
-          const increment = Math.floor(Math.random() * 5) + 1;
-          return { ...app, timeSpent: app.timeSpent + increment };
-        }
-        return app;
+    const savedData = localStorage.getItem('screenTimeData');
+    const savedDate = localStorage.getItem('screenTimeDate');
+    const today = new Date().toDateString();
+    
+    if (savedData && savedDate === today) {
+      // Load saved data from today
+      const data = JSON.parse(savedData);
+      setApps(data.apps);
+      setTotalTimeToday(data.totalTime);
+    } else {
+      // Start fresh with simulated data or random data
+      const appsWithRandomTime = simulatedApps.map(app => ({
+        ...app,
+        timeSpent: Math.floor(Math.random() * 60) // Random time up to 60 mins
       }));
-    }, 30000); // Update every 30 seconds
+      
+      const total = appsWithRandomTime.reduce((sum, app) => sum + app.timeSpent, 0);
+      setApps(appsWithRandomTime);
+      setTotalTimeToday(total);
+      
+      // Save initial data
+      saveData(appsWithRandomTime, total);
+    }
 
-    return () => clearInterval(interval);
+    // Start simulation of active app usage
+    startTrackingSimulation();
+
+    return () => {
+      if (updateIntervalRef.current) {
+        clearInterval(updateIntervalRef.current);
+      }
+    };
   }, []);
 
-  const totalTime = appUsage.reduce((sum, app) => sum + app.timeSpent, 0);
-  const productiveTime = appUsage
-    .filter(app => ['Productivity', 'Development', 'Design'].includes(app.category))
-    .reduce((sum, app) => sum + app.timeSpent, 0);
-  
-  const categories = Array.from(new Set(appUsage.map(app => app.category)));
+  const startTrackingSimulation = () => {
+    // Simulate changing active apps (like real usage)
+    const intervalId = window.setInterval(() => {
+      // Randomly switch active app
+      const randomAppIndex = Math.floor(Math.random() * apps.length);
+      const randomApp = apps[randomAppIndex];
+      
+      if (activeAppRef.current !== randomApp.id) {
+        activeAppRef.current = randomApp.id;
+        setActiveApp(randomApp.id);
+        
+        // Update time for the active app
+        setApps(prevApps => {
+          const updatedApps = prevApps.map(app => {
+            if (app.id === randomApp.id) {
+              return { ...app, timeSpent: parseFloat((app.timeSpent + 0.25).toFixed(2)) }; // Add 15 seconds
+            }
+            return app;
+          });
+          
+          // Update total
+          const newTotal = updatedApps.reduce((sum, app) => sum + app.timeSpent, 0);
+          setTotalTimeToday(newTotal);
+          setLastUpdate(new Date());
+          
+          // Save updated data
+          saveData(updatedApps, newTotal);
+          
+          return updatedApps;
+        });
+      }
+    }, 15000); // Update every 15 seconds
+
+    updateIntervalRef.current = intervalId;
+  };
+
+  const saveData = (appList: AppUsage[], totalTime: number) => {
+    const today = new Date().toDateString();
+    localStorage.setItem('screenTimeDate', today);
+    localStorage.setItem('screenTimeData', JSON.stringify({
+      apps: appList,
+      totalTime: totalTime
+    }));
+  };
 
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
+    const mins = Math.round(minutes % 60);
+    return hours > 0 ? `${hours} hr${hours > 1 ? 's' : ''}, ${mins} min${mins !== 1 ? 's' : ''}` : `${mins} minutes`;
+  };
+
+  const formatShortTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
-  const getTimePercentage = (app: AppUsage) => {
-    if (totalTime === 0) return 0;
-    return (app.timeSpent / totalTime) * 100;
+  const handleSetTimer = (app: AppUsage) => {
+    setSelectedApp(app);
+    setTimerDuration(60); // Default to 1 hour
+    setShowTimerModal(true);
   };
 
-  const getUsageColor = (app: AppUsage) => {
-    if (app.dailyLimit && app.timeSpent > app.dailyLimit) {
-      return '#FF6B6B';
-    } else if (app.dailyLimit && app.timeSpent > app.dailyLimit * 0.8) {
-      return '#FFD166';
+  const handleSaveTimer = () => {
+    if (selectedApp) {
+      // Here you would save the timer limit for the app
+      const appLimits = JSON.parse(localStorage.getItem('appLimits') || '{}');
+      appLimits[selectedApp.id] = timerDuration;
+      localStorage.setItem('appLimits', JSON.stringify(appLimits));
+      
+      // Check if app is over limit
+      if (selectedApp.timeSpent > timerDuration) {
+        alert(`⚠️ ${selectedApp.name} is already over your limit of ${timerDuration} minutes!`);
+      }
     }
-    return '#4ECDC4';
+    setShowTimerModal(false);
+    setSelectedApp(null);
   };
 
-  const getProductivityScore = () => {
-    if (totalTime === 0) return 0;
-    return Math.round((productiveTime / totalTime) * 100);
-  };
-
-  const handleAddNote = () => {
-    if (!newNote.title.trim() || !newNote.content.trim()) return;
-
-    const now = new Date().toISOString().split('T')[0];
-    const note: Note = {
-      id: Date.now().toString(),
-      title: newNote.title,
-      content: newNote.content,
-      type: newNote.type,
-      createdAt: now,
-      lastEdited: now,
-      tags: newNote.tags,
-      color: newNote.color
-    };
-
-    setNotes([note, ...notes]);
-    setNewNote({
-      title: '',
-      content: '',
-      type: 'general',
-      tags: [],
-      color: '#45B7D1'
-    });
-  };
-
-  const handleEditNote = (note: Note) => {
-    setEditingNote(note);
-    setNewNote({
-      title: note.title,
-      content: note.content,
-      type: note.type,
-      tags: note.tags,
-      color: note.color
-    });
-  };
-
-  const handleUpdateNote = () => {
-    if (!editingNote || !newNote.title.trim() || !newNote.content.trim()) return;
-
-    const updatedNote: Note = {
-      ...editingNote,
-      title: newNote.title,
-      content: newNote.content,
-      type: newNote.type,
-      tags: newNote.tags,
-      color: newNote.color,
-      lastEdited: new Date().toISOString().split('T')[0]
-    };
-
-    setNotes(notes.map(note => note.id === editingNote.id ? updatedNote : note));
-    setEditingNote(null);
-    setNewNote({
-      title: '',
-      content: '',
-      type: 'general',
-      tags: [],
-      color: '#45B7D1'
-    });
-  };
-
-  const handleDeleteNote = (id: string) => {
-    setNotes(notes.filter(note => note.id !== id));
-  };
-
-  const handleAddTag = () => {
-    if (newTag.trim() && !newNote.tags.includes(newTag.trim())) {
-      setNewNote({
-        ...newNote,
-        tags: [...newNote.tags, newTag.trim()]
+  const handleManualTimeUpdate = (appId: string, minutes: number) => {
+    setApps(prevApps => {
+      const updatedApps = prevApps.map(app => {
+        if (app.id === appId) {
+          return { ...app, timeSpent: minutes };
+        }
+        return app;
       });
-      setNewTag('');
+      
+      const newTotal = updatedApps.reduce((sum, app) => sum + app.timeSpent, 0);
+      setTotalTimeToday(newTotal);
+      saveData(updatedApps, newTotal);
+      
+      return updatedApps;
+    });
+  };
+
+  const getTimePercentage = (minutes: number) => {
+    return totalTimeToday > 0 ? (minutes / totalTimeToday) * 100 : 0;
+  };
+
+  const getDayOfWeek = () => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const today = new Date();
+    return days[today.getDay()];
+  };
+
+  const getAppLimit = (appId: string) => {
+    const appLimits = JSON.parse(localStorage.getItem('appLimits') || '{}');
+    return appLimits[appId] || null;
+  };
+
+  const resetDayData = () => {
+    if (window.confirm('Reset all screen time data for today?')) {
+      const resetApps = apps.map(app => ({ ...app, timeSpent: 0 }));
+      setApps(resetApps);
+      setTotalTimeToday(0);
+      saveData(resetApps, 0);
     }
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setNewNote({
-      ...newNote,
-      tags: newNote.tags.filter(tag => tag !== tagToRemove)
-    });
-  };
-
-  const handleSetDailyLimit = (appId: string) => {
-    const app = appUsage.find(a => a.id === appId);
-    setDailyLimitModal({
-      show: true,
-      appId,
-      limit: app?.dailyLimit || 60
-    });
-  };
-
-  const saveDailyLimit = () => {
-    setAppUsage(appUsage.map(app => 
-      app.id === dailyLimitModal.appId 
-        ? { ...app, dailyLimit: dailyLimitModal.limit }
-        : app
-    ));
-    setDailyLimitModal({ show: false, appId: '', limit: 0 });
-  };
-
-  const filteredNotes = notes.filter(note => {
-    const matchesSearch = searchQuery === '' || 
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === 'all' || note.type === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
-
-  const filteredApps = appUsage.filter(app => 
-    selectedCategory === 'all' || app.category === selectedCategory
-  );
-
-  const colorOptions = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-    '#FFD166', '#118AB2', '#EF476F', '#06D6A0'
-  ];
+  // Sort apps by time spent (most used first)
+  const sortedApps = [...apps].sort((a, b) => b.timeSpent - a.timeSpent);
 
   return (
-    <div className="screen-time-container">
-      <header className="screen-time-header">
-        <button className="back-button" onClick={onBack}>
-          ← Back to Home
-        </button>
-        <h1>Screen Time & Notes</h1>
-        <p>Track your app usage and capture your thoughts</p>
-      </header>
-
-      <div className="main-tabs">
-        <button
-          className={`main-tab ${activeTab === 'screentime' ? 'active' : ''}`}
-          onClick={() => setActiveTab('screentime')}
-        >
-          📱 Screen Time
-        </button>
-        <button
-          className={`main-tab ${activeTab === 'notes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('notes')}
-        >
-          📝 Notes & Ideas
-        </button>
-      </div>
-
-      {activeTab === 'screentime' ? (
-        <div className="screen-time-content">
-          <div className="dashboard-header">
-            <div className="time-range-selector">
-              <button 
-                className={`time-range-btn ${timeRange === 'today' ? 'active' : ''}`}
-                onClick={() => setTimeRange('today')}
-              >
-                Today
-              </button>
-              <button 
-                className={`time-range-btn ${timeRange === 'week' ? 'active' : ''}`}
-                onClick={() => setTimeRange('week')}
-              >
-                This Week
-              </button>
-              <button 
-                className={`time-range-btn ${timeRange === 'month' ? 'active' : ''}`}
-                onClick={() => setTimeRange('month')}
-              >
-                This Month
-              </button>
-            </div>
-
-            <div className="category-filter">
-              <select 
-                value={selectedCategory} 
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="stats-overview">
-            <div className="stat-card">
-              <div className="stat-icon">⏱️</div>
-              <div className="stat-info">
-                <span className="stat-value">{formatTime(totalTime)}</span>
-                <span className="stat-label">Total Screen Time</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">🎯</div>
-              <div className="stat-info">
-                <span className="stat-value">{formatTime(productiveTime)}</span>
-                <span className="stat-label">Productive Time</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📊</div>
-              <div className="stat-info">
-                <span className="stat-value">{getProductivityScore()}%</span>
-                <span className="stat-label">Productivity Score</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📱</div>
-              <div className="stat-info">
-                <span className="stat-value">{appUsage.length}</span>
-                <span className="stat-label">Apps Used</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="app-usage-section">
-            <h2>App Usage Breakdown</h2>
-            <div className="apps-list">
-              {filteredApps.map(app => (
-                <div key={app.id} className="app-card">
-                  <div className="app-header">
-                    <div className="app-icon">{app.icon}</div>
-                    <div className="app-info">
-                      <h3>{app.name}</h3>
-                      <span className="app-category">{app.category}</span>
-                    </div>
-                    <div className="app-actions">
-                      <button 
-                        className="limit-btn"
-                        onClick={() => handleSetDailyLimit(app.id)}
-                        title="Set daily limit"
-                      >
-                        ⚡
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="app-stats">
-                    <div className="time-info">
-                      <span className="time-spent">{formatTime(app.timeSpent)}</span>
-                      {app.dailyLimit && (
-                        <span className="daily-limit">/ {formatTime(app.dailyLimit)} limit</span>
-                      )}
-                    </div>
-                    <div className="last-used">
-                      Last used: {new Date(app.lastUsed).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </div>
-
-                  <div className="progress-container">
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ 
-                          width: `${getTimePercentage(app)}%`,
-                          backgroundColor: getUsageColor(app)
-                        }}
-                      ></div>
-                    </div>
-                    <span className="progress-percentage">
-                      {getTimePercentage(app).toFixed(1)}%
-                    </span>
-                  </div>
-
-                  {app.dailyLimit && (
-                    <div className="limit-status">
-                      <div className="limit-progress">
-                        <div 
-                          className="limit-progress-fill"
-                          style={{ 
-                            width: `${Math.min(100, (app.timeSpent / app.dailyLimit) * 100)}%`,
-                            backgroundColor: app.timeSpent > app.dailyLimit ? '#FF6B6B' : 
-                                           app.timeSpent > app.dailyLimit * 0.8 ? '#FFD166' : '#4ECDC4'
-                          }}
-                        ></div>
-                      </div>
-                      <span className="limit-text">
-                        {app.timeSpent > app.dailyLimit ? 'Over limit!' : 
-                         app.timeSpent > app.dailyLimit * 0.8 ? 'Approaching limit' : 'Within limit'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="charts-section">
-            <h2>Usage Distribution</h2>
-            <div className="charts-grid">
-              <div className="chart-container">
-                <h3>By Category</h3>
-                <div className="category-chart">
-                  {categories.map(category => {
-                    const categoryTime = appUsage
-                      .filter(app => app.category === category)
-                      .reduce((sum, app) => sum + app.timeSpent, 0);
-                    const percentage = totalTime > 0 ? (categoryTime / totalTime) * 100 : 0;
-                    
-                    return (
-                      <div key={category} className="category-item">
-                        <div className="category-header">
-                          <span className="category-name">{category}</span>
-                          <span className="category-time">{formatTime(categoryTime)}</span>
-                        </div>
-                        <div className="category-bar">
-                          <div 
-                            className="category-fill"
-                            style={{ width: `${percentage}%` }}
-                          ></div>
-                        </div>
-                        <span className="category-percentage">{percentage.toFixed(1)}%</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="chart-container">
-                <h3>Top 5 Apps</h3>
-                <div className="top-apps-chart">
-                  {[...appUsage]
-                    .sort((a, b) => b.timeSpent - a.timeSpent)
-                    .slice(0, 5)
-                    .map((app, index) => (
-                      <div key={app.id} className="top-app-item">
-                        <div className="app-rank">#{index + 1}</div>
-                        <div className="app-details">
-                          <span className="app-name">{app.icon} {app.name}</span>
-                          <span className="app-time">{formatTime(app.timeSpent)}</span>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="notes-content">
-          <div className="notes-header">
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Search notes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <span className="search-icon">🔍</span>
+    <div className="screentime-container">
+      {/* Timer Modal */}
+      {showTimerModal && selectedApp && (
+        <div className="timer-modal-overlay">
+          <div className="timer-modal">
+            <div className="modal-header">
+              <h3>App Timer</h3>
+              <p className="modal-subtitle">
+                This timer for {selectedApp.name} will reset at midnight
+              </p>
             </div>
             
-            <div className="notes-filter">
-              <select 
-                value={selectedCategory} 
-                onChange={(e) => setSelectedCategory(e.target.value)}
+            <div className="timer-options">
+              <div 
+                className={`timer-option ${timerDuration === 30 ? 'selected' : ''}`}
+                onClick={() => setTimerDuration(30)}
               >
-                <option value="all">All Types</option>
-                <option value="idea">Ideas</option>
-                <option value="story">Stories</option>
-                <option value="general">General</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="notes-editor-section">
-            <div className="editor-card">
-              <h3>{editingNote ? 'Edit Note' : 'Create New Note'}</h3>
-              
-              <div className="editor-form">
-                <input
-                  type="text"
-                  placeholder="Note title..."
-                  value={newNote.title}
-                  onChange={(e) => setNewNote({...newNote, title: e.target.value})}
-                  className="note-title-input"
-                />
-
-                <textarea
-                  placeholder="Start writing your ideas, stories, or thoughts..."
-                  value={newNote.content}
-                  onChange={(e) => setNewNote({...newNote, content: e.target.value})}
-                  className="note-content-input"
-                  rows={6}
-                />
-
-                <div className="note-type-selection">
-                  <label>Type:</label>
-                  <div className="type-options">
-                    <button
-                      type="button"
-                      className={`type-option ${newNote.type === 'idea' ? 'selected' : ''}`}
-                      onClick={() => setNewNote({...newNote, type: 'idea'})}
-                    >
-                      💡 Idea
-                    </button>
-                    <button
-                      type="button"
-                      className={`type-option ${newNote.type === 'story' ? 'selected' : ''}`}
-                      onClick={() => setNewNote({...newNote, type: 'story'})}
-                    >
-                      📖 Story
-                    </button>
-                    <button
-                      type="button"
-                      className={`type-option ${newNote.type === 'general' ? 'selected' : ''}`}
-                      onClick={() => setNewNote({...newNote, type: 'general'})}
-                    >
-                      📝 General
-                    </button>
-                  </div>
-                </div>
-
-                <div className="color-selection">
-                  <label>Color:</label>
-                  <div className="color-options">
-                    {colorOptions.map(color => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`color-option ${newNote.color === color ? 'selected' : ''}`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setNewNote({...newNote, color})}
-                        title={color}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="tags-section">
-                  <label>Tags:</label>
-                  <div className="tags-input-container">
-                    <input
-                      type="text"
-                      placeholder="Add a tag..."
-                      value={newTag}
-                      onChange={(e) => setNewTag(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                    />
-                    <button type="button" onClick={handleAddTag}>+ Add</button>
-                  </div>
-                  <div className="tags-list">
-                    {newNote.tags.map(tag => (
-                      <span key={tag} className="tag">
-                        {tag}
-                        <button 
-                          type="button" 
-                          className="remove-tag"
-                          onClick={() => handleRemoveTag(tag)}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="editor-actions">
-                  {editingNote && (
-                    <button
-                      type="button"
-                      className="cancel-btn"
-                      onClick={() => {
-                        setEditingNote(null);
-                        setNewNote({
-                          title: '',
-                          content: '',
-                          type: 'general',
-                          tags: [],
-                          color: '#45B7D1'
-                        });
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="save-btn"
-                    onClick={editingNote ? handleUpdateNote : handleAddNote}
-                    disabled={!newNote.title.trim() || !newNote.content.trim()}
-                  >
-                    {editingNote ? 'Update Note' : 'Save Note'}
-                  </button>
-                </div>
+                <span className="time-value">30</span>
+                <span className="time-label">mins</span>
+              </div>
+              <div 
+                className={`timer-option ${timerDuration === 60 ? 'selected' : ''}`}
+                onClick={() => setTimerDuration(60)}
+              >
+                <span className="time-value">1 hr</span>
+                <span className="time-label">00 mins</span>
+              </div>
+              <div 
+                className={`timer-option ${timerDuration === 95 ? 'selected' : ''}`}
+                onClick={() => setTimerDuration(95)}
+              >
+                <span className="time-value">1 hr</span>
+                <span className="time-label">35 mins</span>
               </div>
             </div>
 
-            <div className="notes-list-section">
-              <h3>My Notes ({filteredNotes.length})</h3>
-              {filteredNotes.length === 0 ? (
-                <div className="empty-notes">
-                  <p>No notes found. Create your first one!</p>
-                </div>
-              ) : (
-                <div className="notes-grid">
-                  {filteredNotes.map(note => (
-                    <div 
-                      key={note.id} 
-                      className="note-card"
-                      style={{ 
-                        borderLeftColor: note.color,
-                        backgroundColor: `${note.color}10`
-                      }}
-                    >
-                      <div className="note-header">
-                        <h4>{note.title}</h4>
-                        <div className="note-actions">
-                          <button 
-                            className="edit-btn"
-                            onClick={() => handleEditNote(note)}
-                            title="Edit note"
-                          >
-                            ✏️
-                          </button>
-                          <button 
-                            className="delete-btn"
-                            onClick={() => handleDeleteNote(note.id)}
-                            title="Delete note"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="note-content">
-                        {note.content.length > 150 ? `${note.content.substring(0, 150)}...` : note.content}
-                      </div>
-                      
-                      <div className="note-meta">
-                        <div className="note-type">
-                          <span className={`type-badge ${note.type}`}>
-                            {note.type === 'idea' ? '💡 Idea' : 
-                             note.type === 'story' ? '📖 Story' : '📝 General'}
-                          </span>
-                        </div>
-                        <div className="note-dates">
-                          <span className="date-info">Created: {note.createdAt}</span>
-                          <span className="date-info">Edited: {note.lastEdited}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="note-tags">
-                        {note.tags.map(tag => (
-                          <span key={tag} className="note-tag">{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="custom-timer">
+              <label>Custom time (minutes):</label>
+              <div className="custom-input">
+                <input
+                  type="number"
+                  value={timerDuration}
+                  onChange={(e) => setTimerDuration(parseInt(e.target.value) || 0)}
+                  min="1"
+                  max="240"
+                />
+                <span>minutes</span>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {dailyLimitModal.show && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Set Daily Limit</h3>
-            <div className="modal-body">
-              <p>Set a daily time limit for this app (in minutes):</p>
-              <input
-                type="number"
-                min="1"
-                max="1440"
-                value={dailyLimitModal.limit}
-                onChange={(e) => setDailyLimitModal({
-                  ...dailyLimitModal,
-                  limit: parseInt(e.target.value) || 0
-                })}
-                className="limit-input"
-              />
+            <div className="current-usage">
+              <p>Current usage today: {formatTime(selectedApp.timeSpent)}</p>
             </div>
+
             <div className="modal-actions">
               <button 
                 className="cancel-btn"
-                onClick={() => setDailyLimitModal({ show: false, appId: '', limit: 0 })}
+                onClick={() => setShowTimerModal(false)}
               >
                 Cancel
               </button>
               <button 
-                className="save-btn"
-                onClick={saveDailyLimit}
+                className="ok-btn"
+                onClick={handleSaveTimer}
               >
                 Set Limit
               </button>
@@ -701,6 +278,174 @@ const ScreenTime: React.FC<ScreenTimeProps> = ({ onBack }) => {
           </div>
         </div>
       )}
+
+      {/* Header */}
+      <header className="header">
+        <button className="back-btn" onClick={onBack}>
+          ← Back
+        </button>
+        <h1>Screen Time</h1>
+        <div className="header-controls">
+          <button 
+            className="reset-btn"
+            onClick={resetDayData}
+            title="Reset today's data"
+          >
+            ⟳ Reset
+          </button>
+          <div className="date-display">
+            Today • {getDayOfWeek()}, {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </div>
+        </div>
+      </header>
+
+      {/* Total Time */}
+      <div className="total-time-card">
+        <div className="total-time-header">
+          <h2>Total Screen Time</h2>
+          <span className="today-badge">Today</span>
+        </div>
+        <div className="total-time-value">
+          {formatTime(totalTimeToday)}
+        </div>
+        <div className="last-updated">
+          Last updated: {lastUpdate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+        </div>
+        
+        {/* Weekday Bar */}
+        <div className="weekday-bar">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+            <div 
+              key={index} 
+              className={`weekday ${index === new Date().getDay() ? 'active' : ''}`}
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* App List */}
+      <div className="app-list-section">
+        <div className="section-header">
+          <h3>App Activity Details</h3>
+          <div className="header-actions">
+            <span className="app-count">{sortedApps.length} apps</span>
+            <span className="active-app">
+              {activeApp ? `Active: ${apps.find(a => a.id === activeApp)?.name}` : 'Tracking...'}
+            </span>
+          </div>
+        </div>
+        
+        <div className="app-list">
+          {sortedApps.map((app) => {
+            const limit = getAppLimit(app.id);
+            const isOverLimit = limit && app.timeSpent > limit;
+            
+            return (
+              <div 
+                key={app.id} 
+                className={`app-item ${app.id === activeApp ? 'active' : ''} ${isOverLimit ? 'over-limit' : ''}`}
+              >
+                <div className="app-info">
+                  <div 
+                    className="app-icon"
+                    style={{ backgroundColor: app.color }}
+                  >
+                    {app.icon}
+                  </div>
+                  <div className="app-details">
+                    <div className="app-name-category">
+                      <span className="app-name">{app.name}</span>
+                      <span className="app-category">{app.category}</span>
+                    </div>
+                    <div className="app-time">
+                      {formatTime(app.timeSpent)}
+                      {limit && (
+                        <span className="app-limit"> / {formatTime(limit)} limit</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="app-actions">
+                  <div className="time-bar-container">
+                    <div className="time-bar">
+                      <div 
+                        className="time-fill"
+                        style={{ width: `${Math.min(100, getTimePercentage(app.timeSpent))}%` }}
+                      ></div>
+                    </div>
+                    {limit && (
+                      <div 
+                        className="limit-marker"
+                        style={{ left: `${(limit / totalTimeToday) * 100}%` }}
+                      ></div>
+                    )}
+                  </div>
+                  
+                  <div className="action-buttons">
+                    <button 
+                      className="set-timer-btn"
+                      onClick={() => handleSetTimer(app)}
+                    >
+                      {limit ? 'Edit Limit' : 'Set Timer'}
+                    </button>
+                    <div className="time-adjust">
+                      <button 
+                        className="time-minus"
+                        onClick={() => handleManualTimeUpdate(app.id, Math.max(0, app.timeSpent - 5))}
+                      >
+                        -5m
+                      </button>
+                      <button 
+                        className="time-plus"
+                        onClick={() => handleManualTimeUpdate(app.id, app.timeSpent + 5)}
+                      >
+                        +5m
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {isOverLimit && (
+                  <div className="limit-warning">
+                    ⚠️ Over limit by {formatTime(app.timeSpent - limit)}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="quick-stats">
+        <div className="stat">
+          <span className="stat-value">{sortedApps.length}</span>
+          <span className="stat-label">Apps Used</span>
+        </div>
+        <div className="stat">
+          <span className="stat-value">{formatShortTime(totalTimeToday)}</span>
+          <span className="stat-label">Total Time</span>
+        </div>
+        <div className="stat">
+          <span className="stat-value">
+            {sortedApps.length > 0 ? Math.round(totalTimeToday / sortedApps.length) : 0}m
+          </span>
+          <span className="stat-label">Avg per App</span>
+        </div>
+      </div>
+
+      {/* Info Box */}
+      <div className="info-box">
+        <p className="info-title">ℹ️ About Screen Time Tracking</p>
+        <p className="info-text">
+          This is a simulation of screen time tracking. For real app usage monitoring, 
+          you would need to build a native mobile app using platform-specific APIs.
+          This version tracks time automatically and saves your data locally.
+        </p>
+      </div>
     </div>
   );
 };

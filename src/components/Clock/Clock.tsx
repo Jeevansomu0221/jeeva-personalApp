@@ -1,87 +1,124 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, ChevronUp, ChevronDown,  } from 'lucide-react';
 import './Clock.css';
 
 interface ClockProps {
   onBack: () => void;
 }
 
-interface TimeSession {
-  id: string;
-  name: string;
-  duration: number; // in seconds
-  color: string;
+interface ProgressData {
+  yesterday: number;
+  today: number;
+  streak: number;
+  dailyGoal: number;
 }
 
 const Clock: React.FC<ClockProps> = ({ onBack }) => {
-  const sessions: TimeSession[] = [
-    { id: 'study', name: 'Study Time', duration: 3600, color: '#2563eb' }, // 1 hour
-    { id: 'break', name: 'Break Time', duration: 300, color: '#16a34a' }, // 5 min
-    { id: 'deep-work', name: 'Deep Work', duration: 5400, color: '#9333ea' }, // 1.5 hours
-    { id: 'short-break', name: 'Short Break', duration: 180, color: '#0d9488' }, // 3 min
-    { id: 'pomodoro', name: 'Pomodoro', duration: 1500, color: '#dc2626' }, // 25 min
-    { id: 'exercise', name: 'Exercise', duration: 1800, color: '#ea580c' }, // 30 min
-  ];
-
-  const [selectedSession, setSelectedSession] = useState<TimeSession | null>(null);
+  const [duration, setDuration] = useState<number>(105); // in minutes
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [currentTime, setCurrentTime] = useState<string>('');
+  const [skipBreaks, setSkipBreaks] = useState<boolean>(false);
+  const [showSetup, setShowSetup] = useState<boolean>(true);
+  const [progress, setProgress] = useState<ProgressData>({
+    yesterday: 0,
+    today: 0,
+    streak: 0,
+    dailyGoal: 60
+  });
 
-  // Display current time
+  // Load progress from localStorage
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true 
-      }));
+    const loadProgress = () => {
+      try {
+        const savedData = localStorage.getItem('focus-progress');
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          const today = new Date().toDateString();
+          
+          if (data.lastDate === today) {
+            setProgress(data.progress);
+          } else {
+            // New day, move today to yesterday
+            setProgress({
+              yesterday: data.progress.today,
+              today: 0,
+              streak: data.progress.today >= data.progress.dailyGoal ? data.progress.streak + 1 : 0,
+              dailyGoal: data.progress.dailyGoal
+            });
+          }
+        }
+      } catch (error) {
+        console.log('No saved progress');
+      }
     };
-    
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    loadProgress();
   }, []);
+
+  // Save progress
+  const saveProgress = (newProgress: ProgressData) => {
+    const data = {
+      progress: newProgress,
+      lastDate: new Date().toDateString()
+    };
+    localStorage.setItem('focus-progress', JSON.stringify(data));
+  };
 
   // Timer countdown
   useEffect(() => {
     let interval: number;
 
-if (isRunning && timeLeft > 0) {
-  interval = window.setInterval(() => {
-    setTimeLeft((prev) => {
-      if (prev <= 1) {
-        setIsRunning(false);
-        alert(`${selectedSession?.name} completed! ✅`);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
-}
+    if (isRunning && timeLeft > 0) {
+      interval = window.setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setIsRunning(false);
+            handleSessionComplete();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
 
-return () => clearInterval(interval);
-  }, [isRunning, timeLeft, selectedSession]);
+    return () => clearInterval(interval);
+  }, [isRunning, timeLeft]);
 
-  const selectSession = (session: TimeSession) => {
-    setSelectedSession(session);
-    setTimeLeft(session.duration);
-    setIsRunning(false);
+  const handleSessionComplete = () => {
+    const minutesCompleted = Math.floor(duration);
+    const newProgress = {
+      ...progress,
+      today: progress.today + minutesCompleted
+    };
+    setProgress(newProgress);
+    saveProgress(newProgress);
+    
+    alert(`Focus session completed! 🎉\nYou focused for ${duration} minutes.`);
+    setShowSetup(true);
+  };
+
+  const startSession = () => {
+    setTimeLeft(duration * 60);
+    setShowSetup(false);
+    setIsRunning(true);
   };
 
   const toggleTimer = () => {
-    if (timeLeft > 0) {
-      setIsRunning(!isRunning);
-    }
+    setIsRunning(!isRunning);
   };
 
   const resetTimer = () => {
-    if (selectedSession) {
-      setTimeLeft(selectedSession.duration);
-      setIsRunning(false);
-    }
+    setShowSetup(true);
+    setIsRunning(false);
+    setTimeLeft(0);
+  };
+
+  const adjustDuration = (change: number) => {
+    const newDuration = Math.max(5, Math.min(240, duration + change));
+    setDuration(newDuration);
+  };
+
+  const calculateBreaks = (mins: number): number => {
+    return Math.floor(mins / 45);
   };
 
   const formatTime = (seconds: number): string => {
@@ -96,84 +133,159 @@ return () => clearInterval(interval);
   };
 
   const getProgress = (): number => {
-    if (!selectedSession) return 0;
-    return ((selectedSession.duration - timeLeft) / selectedSession.duration) * 100;
+    if (!duration) return 0;
+    return ((duration * 60 - timeLeft) / (duration * 60)) * 100;
+  };
+
+  const getDailyProgress = (): number => {
+    return Math.min(100, (progress.today / progress.dailyGoal) * 100);
   };
 
   return (
-    <div className="feature-container">
-      <button onClick={onBack} className="back-button">
-        ← Back to Home
-      </button>
+    <div className="clock-container">
+      <div className="clock-header">
+        <button onClick={onBack} className="back-button-clock">
+          ← Back to Home
+        </button>
+      </div>
 
-      <div className="feature-content">
-        <h2 className="feature-title">Clock</h2>
+      <div className="clock-content">
+        {showSetup ? (
+          <div className="setup-view">
+            {/* Setup Section */}
+            <div className="setup-section">
+              <h2 className="setup-title">Get ready to focus</h2>
+              <p className="setup-subtitle">
+                We'll turn off notifications and app alerts during each session. 
+                For longer sessions, we'll add a short break so you can recharge.
+              </p>
 
-        {/* Current Time Display */}
-        <div className="current-time-display">
-          <div className="time-text">{currentTime}</div>
-          <div className="date-text">{new Date().toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}</div>
-        </div>
+              <div className="duration-selector">
+                <div className="duration-display">
+                  <div className="duration-number">{duration}</div>
+                  <div className="duration-label">mins</div>
+                </div>
+                <div className="duration-controls">
+                  <button onClick={() => adjustDuration(5)} className="duration-btn">
+                    <ChevronUp size={24} />
+                  </button>
+                  <button onClick={() => adjustDuration(-5)} className="duration-btn">
+                    <ChevronDown size={24} />
+                  </button>
+                </div>
+              </div>
 
-        {/* Session Selection */}
-        {!selectedSession && (
-          <div className="sessions-grid">
-            {sessions.map((session) => (
-              <button
-                key={session.id}
-                onClick={() => selectSession(session)}
-                className="session-card"
-                style={{ backgroundColor: session.color }}
-              >
-                <div className="session-name">{session.name}</div>
-                <div className="session-duration">{formatTime(session.duration)}</div>
+              <div className="breaks-info">
+                <p>You'll have {calculateBreaks(duration)} break{calculateBreaks(duration) !== 1 ? 's' : ''}</p>
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={skipBreaks}
+                    onChange={(e) => setSkipBreaks(e.target.checked)}
+                  />
+                  <span>Skip breaks</span>
+                </label>
+              </div>
+
+              <button onClick={startSession} className="start-btn">
+                <Play size={20} />
+                Start focus session
               </button>
-            ))}
-          </div>
-        )}
-
-        {/* Active Timer */}
-        {selectedSession && (
-          <div className="timer-container">
-            <div className="timer-header">
-              <h3 style={{ color: selectedSession.color }}>{selectedSession.name}</h3>
             </div>
 
+            {/* Daily Progress */}
+            <div className="progress-section">
+              <h3 className="progress-title">Daily progress</h3>
+              
+              <div className="progress-stats">
+                <div className="stat-item">
+                  <div className="stat-label">Yesterday</div>
+                  <div className="stat-value">{progress.yesterday}</div>
+                  <div className="stat-unit">minutes</div>
+                </div>
+
+                <div className="stat-item-main">
+                  <div className="progress-circle-container">
+                    <svg className="progress-circle" viewBox="0 0 100 100">
+                      <circle
+                        className="progress-circle-bg"
+                        cx="50"
+                        cy="50"
+                        r="45"
+                      />
+                      <circle
+                        className="progress-circle-fill"
+                        cx="50"
+                        cy="50"
+                        r="45"
+                        strokeDasharray={`${2 * Math.PI * 45}`}
+                        strokeDashoffset={`${2 * Math.PI * 45 * (1 - getDailyProgress() / 100)}`}
+                      />
+                    </svg>
+                    <div className="progress-center">
+                      <div className="stat-label-large">Daily goal</div>
+                      <div className="stat-value-large">{Math.floor(progress.dailyGoal / 60)}</div>
+                      <div className="stat-unit-large">hour{progress.dailyGoal >= 120 ? 's' : ''}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="stat-item">
+                  <div className="stat-label">Streak</div>
+                  <div className="stat-value">{progress.streak}</div>
+                  <div className="stat-unit">days</div>
+                </div>
+              </div>
+
+              <div className="progress-completed">
+                Completed: {progress.today} minutes
+              </div>
+            </div>
+
+            {/* Spotify Integration */}
+
+          </div>
+        ) : (
+          <div className="session-view">
+            {/* Timer Display */}
             <div className="timer-display">
-              <svg className="progress-ring" width="280" height="280">
+              <svg className="timer-ring" viewBox="0 0 100 100">
                 <circle
-                  className="progress-ring-bg"
-                  cx="140"
-                  cy="140"
-                  r="120"
+                  className="timer-ring-bg"
+                  cx="50"
+                  cy="50"
+                  r="45"
                 />
                 <circle
-                  className="progress-ring-circle"
-                  cx="140"
-                  cy="140"
-                  r="120"
-                  stroke={selectedSession.color}
-                  strokeDasharray={`${2 * Math.PI * 120}`}
-                  strokeDashoffset={`${2 * Math.PI * 120 * (1 - getProgress() / 100)}`}
+                  className="timer-ring-fill"
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  strokeDasharray={`${2 * Math.PI * 45}`}
+                  strokeDashoffset={`${2 * Math.PI * 45 * (1 - getProgress() / 100)}`}
                 />
               </svg>
               <div className="timer-text">{formatTime(timeLeft)}</div>
+              <div className="timer-status">Focus Time</div>
             </div>
 
-            <div className="timer-controls">
-              <button onClick={toggleTimer} className="control-btn" style={{ backgroundColor: selectedSession.color }}>
-                {isRunning ? <Pause size={24} /> : <Play size={24} />}
+            <div className="session-controls">
+              <button onClick={toggleTimer} className="control-btn-primary">
+                {isRunning ? (
+                  <>
+                    <Pause size={20} />
+                    Pause
+                  </>
+                ) : (
+                  <>
+                    <Play size={20} />
+                    Resume
+                  </>
+                )}
               </button>
-              <button onClick={resetTimer} className="control-btn secondary">
-                <RotateCcw size={24} />
-              </button>
-              <button onClick={() => setSelectedSession(null)} className="control-btn secondary">
-                Change Session
+              <button onClick={resetTimer} className="control-btn-secondary">
+                <RotateCcw size={20} />
+                End Session
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Clock, Trophy, Plus } from 'lucide-react';
+import { Play, Pause, RotateCcw, Clock, Trophy, Plus, Trash2 } from 'lucide-react';
 import './Timer.css';
 
 interface TimerProps {
@@ -21,7 +21,7 @@ interface Record {
 }
 
 const Timer: React.FC<TimerProps> = ({ onBack }) => {
-  const challenges: Challenge[] = [
+  const initialChallenges: Challenge[] = [
     // Breath Holding
     { id: 'breath-hold', name: 'Breath Hold', category: 'Breathing', icon: '🫁', color: '#0ea5e9' },
     
@@ -49,29 +49,60 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
     { id: 'reading', name: 'Reading Session', category: 'Learning', icon: '📚', color: '#6366f1' },
   ];
 
+  const [challenges, setChallenges] = useState<Challenge[]>(initialChallenges);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
-  const [time, setTime] = useState<number>(0); // in milliseconds
+  const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [records, setRecords] = useState<Record[]>([]);
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customName, setCustomName] = useState('');
+  const [customEmoji, setCustomEmoji] = useState('⚡');
+  const [showDelete, setShowDelete] = useState<string | null>(null);
 
-  // Load records from localStorage
+  const emojiList = ['⚡', '🚴', '🏋️', '🧘‍♀️', '🏊‍♀️', '🏃', '🚲', '🧗', '🤸', '🎯', '🌟', '💪', '🔥', '⭐', '🏆'];
+
+  // Load challenges and records from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('jeeva-timer-records');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setRecords(parsed.map((r: any) => ({ ...r, date: new Date(r.date) })));
+    const savedChallenges = localStorage.getItem('jeeva-timer-challenges');
+    const savedRecords = localStorage.getItem('jeeva-timer-records');
+    
+    if (savedChallenges) {
+      try {
+        const parsed = JSON.parse(savedChallenges);
+        // Merge with initial challenges, avoiding duplicates
+        const allChallenges = [...initialChallenges];
+        parsed.forEach((challenge: Challenge) => {
+          if (!allChallenges.some(c => c.id === challenge.id)) {
+            allChallenges.push(challenge);
+          }
+        });
+        setChallenges(allChallenges);
+      } catch (error) {
+        console.error('Error parsing saved challenges:', error);
+      }
+    }
+
+    if (savedRecords) {
+      try {
+        const parsed = JSON.parse(savedRecords);
+        setRecords(parsed.map((r: any) => ({ ...r, date: new Date(r.date) })));
+      } catch (error) {
+        console.error('Error parsing saved records:', error);
+      }
     }
   }, []);
 
-  // Save records to localStorage
+  // Save challenges and records to localStorage
   useEffect(() => {
+    const customChallenges = challenges.filter(c => c.id.startsWith('custom-'));
+    if (customChallenges.length > 0) {
+      localStorage.setItem('jeeva-timer-challenges', JSON.stringify(customChallenges));
+    }
+    
     if (records.length > 0) {
       localStorage.setItem('jeeva-timer-records', JSON.stringify(records));
     }
-  }, [records]);
+  }, [challenges, records]);
 
   // Timer logic
   useEffect(() => {
@@ -79,7 +110,7 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
 
     if (isRunning) {
       interval = window.setInterval(() => {
-        setTime((prevTime) => prevTime + 10); // Update every 10ms
+        setTime((prevTime) => prevTime + 10);
       }, 10);
     }
 
@@ -100,12 +131,13 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
     if (!selectedChallenge || time === 0) return;
 
     const newRecord: Record = {
-      challengeId: selectedChallenge.id, // Use 'id' here
+      challengeId: selectedChallenge.id,
       time: time,
       date: new Date()
     };
 
-    setRecords([newRecord, ...records]);
+    const updatedRecords = [newRecord, ...records];
+    setRecords(updatedRecords);
     
     const bestTime = getBestTime(selectedChallenge.id);
     const isNewRecord = !bestTime || time < bestTime;
@@ -135,15 +167,24 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
       id: `custom-${Date.now()}`,
       name: customName,
       category: 'Custom',
-      icon: '⚡',
+      icon: customEmoji,
       color: '#6366f1'
     };
 
-    // Note: Since challenges is const, we can't push to it directly
-    // Instead, we'll start the timer immediately
+    setChallenges(prev => [...prev, customChallenge]);
     startTimer(customChallenge);
     setShowCustomInput(false);
     setCustomName('');
+    setCustomEmoji('⚡');
+  };
+
+  const deleteChallenge = (challengeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this challenge?')) {
+      setChallenges(prev => prev.filter(c => c.id !== challengeId));
+      setRecords(prev => prev.filter(r => r.challengeId !== challengeId));
+    }
+    setShowDelete(null);
   };
 
   const formatTime = (milliseconds: number): string => {
@@ -168,54 +209,26 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
     return Math.min(...challengeRecords.map(r => r.time));
   };
 
-  const getRecentRecords = (challengeId: string, limit: number = 5): Record[] => {
+  const getRecentRecords = (challengeId: string, limit: number = 3): Record[] => {
     return records
       .filter(r => r.challengeId === challengeId)
       .slice(0, limit);
   };
 
   const deleteRecord = (index: number) => {
-    setRecords(records.filter((_, i) => i !== index));
+    if (window.confirm('Are you sure you want to delete this record?')) {
+      setRecords(records.filter((_, i) => i !== index));
+    }
   };
-
-  const categories = ['all', ...Array.from(new Set(challenges.map(c => c.category)))];
-  const filteredChallenges = categoryFilter === 'all' 
-    ? challenges 
-    : challenges.filter(c => c.category === categoryFilter);
-
-  // Get all challenges including custom ones from records
-  const getAllChallenges = () => {
-    const allChallenges = [...challenges];
-    
-    // Add custom challenges from records that aren't already in the list
-    records.forEach(record => {
-      if (!allChallenges.some(c => c.id === record.challengeId) && 
-          record.challengeId.startsWith('custom-')) {
-        allChallenges.push({
-          id: record.challengeId,
-          name: 'Custom Challenge',
-          category: 'Custom',
-          icon: '⚡',
-          color: '#6366f1'
-        });
-      }
-    });
-    
-    return allChallenges;
-  };
-
-  const allChallenges = getAllChallenges();
 
   return (
-    <div className="feature-container">
-      <button onClick={onBack} className="back-button">
+    <div className="timer-container">
+      <button onClick={onBack} className="back-button-timer">
         ← Back to Home
       </button>
 
-      <div className="feature-content">
-        <h2 className="feature-title">Timer & Challenges</h2>
-
-        {/* Active Timer */}
+      <div className="timer-content">
+        {/* Active Timer View */}
         {selectedChallenge ? (
           <div className="active-timer-section">
             <div className="timer-challenge-info">
@@ -267,20 +280,7 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
           </div>
         ) : (
           <>
-            {/* Category Filter */}
-            <div className="category-filter">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setCategoryFilter(cat)}
-                  className={`category-btn ${categoryFilter === cat ? 'active' : ''}`}
-                >
-                  {cat === 'all' ? '🎯 All' : cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Custom Challenge Button */}
+            {/* Custom Challenge Creation */}
             {!showCustomInput ? (
               <div className="custom-challenge-section">
                 <button onClick={() => setShowCustomInput(true)} className="custom-challenge-btn">
@@ -290,24 +290,45 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
               </div>
             ) : (
               <div className="custom-challenge-input">
-                <input
-                  type="text"
-                  placeholder="Enter challenge name (e.g., Cycling, Yoga)"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  className="custom-name-input"
-                  autoFocus
-                />
+                <div className="custom-input-group">
+                  <input
+                    type="text"
+                    placeholder="Enter challenge name"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    className="custom-name-input"
+                    autoFocus
+                  />
+                  <div className="emoji-selector">
+                    <label>Emoji:</label>
+                    <select
+                      value={customEmoji}
+                      onChange={(e) => setCustomEmoji(e.target.value)}
+                      className="emoji-select"
+                    >
+                      {emojiList.map(emoji => (
+                        <option key={emoji} value={emoji}>
+                          {emoji}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="selected-emoji">{customEmoji}</span>
+                  </div>
+                </div>
                 <div className="custom-actions">
-                  <button onClick={addCustomChallenge} className="custom-start-btn">Start</button>
-                  <button onClick={() => setShowCustomInput(false)} className="custom-cancel-btn">Cancel</button>
+                  <button onClick={addCustomChallenge} className="custom-start-btn">
+                    <Plus size={16} /> Add Challenge
+                  </button>
+                  <button onClick={() => setShowCustomInput(false)} className="custom-cancel-btn">
+                    Cancel
+                  </button>
                 </div>
               </div>
             )}
 
             {/* Challenges Grid */}
             <div className="challenges-grid">
-              {filteredChallenges.map(challenge => {
+              {challenges.map(challenge => {
                 const bestTime = getBestTime(challenge.id);
                 const recentRecords = getRecentRecords(challenge.id, 3);
                 
@@ -317,7 +338,19 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
                     onClick={() => startTimer(challenge)}
                     className="challenge-card"
                     style={{ borderColor: challenge.color }}
+                    onMouseEnter={() => setShowDelete(challenge.id)}
+                    onMouseLeave={() => setShowDelete(null)}
                   >
+                    {showDelete === challenge.id && (
+                      <button
+                        className="delete-challenge-btn"
+                        onClick={(e) => deleteChallenge(challenge.id, e)}
+                        title="Delete challenge"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                    
                     <div className="challenge-icon-large">{challenge.icon}</div>
                     <div className="challenge-name">{challenge.name}</div>
                     <div className="challenge-category-badge">{challenge.category}</div>
@@ -347,20 +380,20 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
           </>
         )}
 
-        {/* All Records */}
+        {/* Records History */}
         {!selectedChallenge && records.length > 0 && (
           <div className="records-history">
             <h3>Recent History</h3>
             <div className="records-list">
-              {records.slice(0, 20).map((record, index) => {
-                const challenge = allChallenges.find(c => c.id === record.challengeId); // Use 'id' here
+              {records.slice(0, 10).map((record, index) => {
+                const challenge = challenges.find(c => c.id === record.challengeId);
                 return (
                   <div key={index} className="record-item">
                     <div className="record-info">
                       <span className="record-icon">{challenge?.icon || '⚡'}</span>
                       <div>
                         <div className="record-name">{challenge?.name || 'Custom Challenge'}</div>
-                        <div className="record-date">{record.date.toLocaleString()}</div>
+                        <div className="record-date">{record.date.toLocaleDateString()} {record.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                       </div>
                     </div>
                     <div className="record-time-section">

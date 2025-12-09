@@ -1,376 +1,391 @@
-/* Use the same CSS from Tasks.css or Clock.css */.alarm-header {
+.alarm-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  color: white;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.05);
+  color: #b0b0b0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-bottom: 32px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.alarm-content {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Current Time Display */
+.time-display {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 32px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+}
+
+.current-time {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.current-date {
+  font-size: 1.125rem;
+  color: #888;
+  font-weight: 400;
+}
+
+/* Alarm List Section */
+.alarm-list-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+}
+
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.power-toggle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FF3B30;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.power-toggle-btn:hover {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.2);
+  transform: scale(1.05);
 }
 
 .add-alarm-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #9333ea;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #007AFF;
   border: none;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px rgba(147, 51, 234, 0.3);
+  transition: all 0.3s ease;
 }
 
 .add-alarm-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 8px rgba(147, 51, 234, 0.4);
+  background: #0056CC;
+  transform: scale(1.05);
 }
 
-.add-alarm-form {
-  background-color: #1f2937;
-  padding: 30px;
-  border-radius: 16px;
-  margin-bottom: 30px;
-  border: 1px solid #374151;
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #666;
 }
 
-.add-alarm-form h3 {
-  margin-bottom: 20px;
-  color: #9333ea;
+.empty-state svg {
+  color: #444;
 }
 
-.form-group {
-  margin-bottom: 20px;
+.empty-state p {
+  margin-top: 16px;
+  font-size: 1.125rem;
+  color: #b0b0b0;
+  margin-bottom: 4px;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #d1d5db;
-  font-weight: 500;
-}
-
-.time-input,
-.text-input,
-.select-input {
-  width: 100%;
-  padding: 12px;
-  background-color: #111827;
-  border: 1px solid #374151;
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-}
-
-.time-input:focus,
-.text-input:focus,
-.select-input:focus {
-  outline: none;
-  border-color: #9333ea;
-}
-
-.days-selector {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.day-btn {
-  padding: 10px 16px;
-  background-color: #374151;
-  border: 2px solid #374151;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.day-btn.active {
-  background-color: #9333ea;
-  border-color: #9333ea;
-}
-
-.helper-text {
-  display: block;
-  margin-top: 8px;
-  color: #6b7280;
+.empty-state small {
   font-size: 0.875rem;
+  color: #666;
 }
 
-.form-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.save-btn,
-.cancel-btn {
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.save-btn {
-  background-color: #9333ea;
-  color: white;
-}
-
-.save-btn:hover {
-  background-color: #7e22ce;
-}
-
-.cancel-btn {
-  background-color: #374151;
-  color: white;
-}
-
-.cancel-btn:hover {
-  background-color: #4b5563;
-}
-
-.alarms-list {
+/* Alarm List */
+.alarm-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #6b7280;
-}
-
-.empty-state p {
-  margin-top: 16px;
-  font-size: 1.2rem;
-  color: #9ca3af;
-}
-
-.empty-state small {
-  display: block;
-  margin-top: 8px;
-  color: #6b7280;
-}
-
-.alarm-card {
-  background-color: #1f2937;
-  border-radius: 12px;
+.alarm-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 20px;
-  border: 2px solid #374151;
-  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
 }
 
-.alarm-card.enabled {
-  border-color: #10b981;
+.alarm-item.enabled {
+  background: rgba(52, 199, 89, 0.05);
+  border-color: rgba(52, 199, 89, 0.1);
 }
 
-.alarm-card.disabled {
-  opacity: 0.6;
+.alarm-item.disabled {
+  opacity: 0.5;
 }
 
-.alarm-main {
+.alarm-item.enabled:hover {
+  background: rgba(52, 199, 89, 0.08);
+  border-color: rgba(52, 199, 89, 0.2);
+}
+
+.alarm-item.disabled:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.alarm-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.alarm-time-display {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.alarm-time {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.time-left {
+  font-size: 0.875rem;
+  color: #34C759;
+  background: rgba(52, 199, 89, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.alarm-info {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.alarm-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  transition: transform 0.2s;
-}
-
-.alarm-toggle:hover {
-  transform: scale(1.1);
-}
-
-.alarm-info {
-  flex: 1;
-}
-
-.alarm-time {
-  font-size: 2rem;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 4px;
-}
-
 .alarm-label {
-  font-size: 1rem;
-  color: #d1d5db;
-  margin-bottom: 4px;
-}
-
-.alarm-days {
+  display: flex;
+  align-items: center;
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: #b0b0b0;
+  font-weight: 500;
 }
 
-.delete-btn {
-  background-color: #dc2626;
-  border: none;
-  padding: 10px;
+.alarm-repeat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.repeat-tag {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
   border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s;
+  font-size: 0.75rem;
+  color: #b0b0b0;
 }
 
-.delete-btn:hover {
-  background-color: #b91c1c;
-  transform: scale(1.05);
-}
-/* Existing styles */
-.feature-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+.alarm-item-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.back-button {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+/* Toggle Switch */
+.alarm-toggle-switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
-  padding: 10px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.alarm-toggle-switch.on {
+  background: #34C759;
+}
+
+.alarm-toggle-switch.off {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.alarm-toggle-switch.on .toggle-slider {
+  transform: translateX(24px);
+}
+
+.alarm-toggle-switch.off .toggle-slider {
+  transform: translateX(0);
+}
+
+.delete-alarm-btn {
+  background: rgba(255, 59, 48, 0.1);
+  border: none;
+  color: #FF3B30;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  margin-bottom: 20px;
-  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  opacity: 0.7;
 }
 
-.back-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+.delete-alarm-btn:hover {
+  background: rgba(255, 59, 48, 0.2);
+  opacity: 1;
 }
 
-.feature-content {
-  max-width: 800px;
-  margin: 0 auto;
+/* Add Alarm Form */
+.add-alarm-form {
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  animation: slideUp 0.3s ease;
 }
 
-.alarm-header {
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 15px;
+  margin-bottom: 24px;
 }
 
-.feature-title {
-  color: white;
-  font-size: 32px;
+.form-header h3 {
   margin: 0;
-}
-
-/* Tab Buttons */
-.tab-buttons {
-  display: flex;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 5px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-}
-
-.tab-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.tab-btn.active {
-  background: white;
-  color: #667eea;
-}
-
-.tab-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  font-size: 1.25rem;
+  font-weight: 600;
   color: white;
 }
 
-.tab-btn.active:hover {
-  background: white;
-  color: #667eea;
-}
-
-.add-alarm-btn {
+.close-form-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  border-radius: 8px;
   transition: all 0.3s ease;
-  margin-bottom: 20px;
 }
 
-.add-alarm-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+.close-form-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
 }
 
-/* Form Styles */
-.add-alarm-form {
-  background: white;
-  padding: 25px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+.form-section {
+  margin-bottom: 24px;
 }
 
-.add-alarm-form h3 {
-  margin: 0 0 20px 0;
-  color: #1f2937;
-  font-size: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
+.section-label {
   display: block;
-  margin-bottom: 8px;
-  color: #374151;
-  font-weight: 600;
-  font-size: 14px;
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  color: #b0b0b0;
+  font-weight: 500;
 }
 
-.form-row {
+/* Mode Selector */
+.mode-selector {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-/* Mode Selection */
-.modes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
 .mode-btn {
@@ -378,47 +393,122 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 15px 10px;
-  border: 2px solid #e5e7eb;
+  padding: 16px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  background: white;
-  color: #6b7280;
+  color: #888;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
 .mode-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: rgba(var(--mode-color, 255, 255, 255), 0.2);
+  color: var(--mode-color, #888);
   transform: translateY(-2px);
 }
 
 .mode-btn.active {
-  border-color: #667eea;
-  background: #667eea;
-  color: white;
+  background: rgba(var(--mode-color, 255, 255, 255), 0.1);
+  border-color: var(--mode-color, #007AFF);
+  color: var(--mode-color, #007AFF);
 }
 
-.time-input,
-.text-input,
-.select-input {
+.mode-btn svg {
+  color: inherit;
+}
+
+/* Time Selector */
+.time-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.time-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.time-input {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white !important;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: #007AFF;
+}
+
+/* Fix for select option visibility */
+.time-input option {
+  background: #1a1a1a;
+  color: white;
+  padding: 10px;
+}
+
+.time-label {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ampm-input {
+  flex: 0.8;
+}
+
+.time-separator {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #666;
+  padding-bottom: 20px;
+}
+
+/* Label Input */
+.label-input-wrapper {
+  width: 100%;
+}
+
+.label-input {
+  width: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
   transition: border-color 0.3s ease;
 }
 
-.time-input:focus,
-.text-input:focus,
-.select-input:focus {
+.label-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #007AFF;
 }
 
+.label-input::placeholder {
+  color: #666;
+}
+
+/* Days Selector */
 .days-selector {
   display: flex;
   gap: 8px;
@@ -426,460 +516,193 @@
 }
 
 .day-btn {
-  padding: 10px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  background: white;
-  color: #6b7280;
+  flex: 1;
+  min-width: 60px;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #888;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   transition: all 0.3s ease;
+  text-align: center;
 }
 
 .day-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: rgba(0, 122, 255, 0.3);
+  color: #007AFF;
 }
 
 .day-btn.active {
-  background: #667eea;
-  border-color: #667eea;
+  background: rgba(0, 122, 255, 0.1);
+  border-color: #007AFF;
+  color: #007AFF;
+}
+
+.repeat-note {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+}
+
+/* Sound Selector */
+.sound-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: border-color 0.3s ease;
+}
+
+.sound-selector:focus-within {
+  border-color: #007AFF;
+}
+
+.sound-selector svg {
+  color: #888;
+}
+
+.sound-input {
+  flex: 1;
+  background: none;
+  border: none;
   color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
-.helper-text {
-  display: block;
-  margin-top: 8px;
-  color: #6b7280;
-  font-size: 12px;
+.sound-input:focus {
+  outline: none;
 }
 
+.sound-input option {
+  background: #1a1a1a;
+  color: white;
+  padding: 10px;
+}
+
+/* Form Actions */
 .form-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 32px;
 }
 
 .save-btn,
 .cancel-btn {
   flex: 1;
-  padding: 12px;
+  padding: 16px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 12px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .save-btn {
-  background: #10b981;
+  background: #007AFF;
   color: white;
 }
 
 .save-btn:hover {
-  background: #059669;
+  background: #0056CC;
+  transform: translateY(-2px);
 }
 
 .cancel-btn {
-  background: #e5e7eb;
-  color: #6b7280;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
 }
 
 .cancel-btn:hover {
-  background: #d1d5db;
-}
-
-/* Alarms List */
-.alarms-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.alarm-card {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.alarm-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.alarm-card.disabled {
-  opacity: 0.6;
-}
-
-.alarm-main {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.alarm-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background 0.3s ease;
-}
-
-.alarm-toggle:hover {
-  background: #f3f4f6;
-}
-
-.alarm-info {
-  flex: 1;
-}
-
-.alarm-time-row {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.alarm-time {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.time-left {
-  font-size: 14px;
-  color: #10b981;
-  font-weight: 600;
-  background: #d1fae5;
-  padding: 4px 12px;
-  border-radius: 12px;
-}
-
-.alarm-label {
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 4px;
-}
-
-.alarm-days {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.delete-btn {
-  background: none;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.delete-btn:hover {
-  background: #fee2e2;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: white;
-}
-
-.empty-state p {
-  font-size: 20px;
-  margin: 15px 0 5px 0;
-  font-weight: 600;
-}
-
-.empty-state small {
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-/* Timetable Styles */
-.timetable-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.timetable-day {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.day-header {
-  margin: 0 0 15px 0;
-  color: #667eea;
-  font-size: 20px;
-  font-weight: 700;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.day-entries {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.timetable-entry {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px;
-  background: #f9fafb;
-  border-radius: 12px;
-  border-left: 4px solid #667eea;
-  transition: all 0.3s ease;
-}
-
-.timetable-entry:hover {
-  background: #f3f4f6;
-  transform: translateX(5px);
-}
-
-.entry-time {
-  font-size: 14px;
-  font-weight: 600;
-  color: #667eea;
-  min-width: 140px;
-}
-
-.entry-task {
-  flex: 1;
-  font-size: 16px;
-  color: #1f2937;
-  font-weight: 500;
-}
-
-.delete-btn-small {
-  background: none;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  opacity: 0.6;
-}
-
-.delete-btn-small:hover {
-  background: #fee2e2;
-  opacity: 1;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .feature-title {
-    font-size: 24px;
+@media (max-width: 640px) {
+  .alarm-container {
+    padding: 16px;
   }
 
-  .alarm-header {
-    flex-direction: column;
-    align-items: flex-start;
+  .current-time {
+    font-size: 2.75rem;
   }
 
-  .tab-buttons {
-    width: 100%;
-  }
-
-  .tab-btn {
-    flex: 1;
-    justify-content: center;
-  }
-
-  .modes-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .current-date {
+    font-size: 1rem;
   }
 
   .alarm-time {
-    font-size: 28px;
+    font-size: 1.5rem;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
+  .mode-selector {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .entry-time {
-    min-width: auto;
-  }
-
-  .timetable-entry {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-/* Add these styles to your existing Alarm.css file */
-
-.time-input-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.time-select, .ampm-select {
-  padding: 10px 15px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: white;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
-
-.time-select:focus, .ampm-select:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.time-separator {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #666;
-}
-
-.date-input {
-  width: 100%;
-  padding: 10px 15px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.date-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.upcoming-timetable {
-  margin-bottom: 30px;
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-
-.upcoming-timetable h3 {
-  margin-top: 0;
-  color: #1f2937;
-  margin-bottom: 15px;
-  font-size: 1.3rem;
-}
-
-.timetable-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.timetable-entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  transition: transform 0.2s ease;
-}
-
-.timetable-entry:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.entry-date {
-  font-weight: 600;
-  color: #1f2937;
-  min-width: 150px;
-}
-
-.entry-time {
-  color: #667eea;
-  font-weight: 500;
-  min-width: 120px;
-}
-
-.entry-task {
-  flex: 1;
-  color: #4b5563;
-  margin: 0 15px;
-}
-
-.delete-btn-small {
-  padding: 6px;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.delete-btn-small:hover {
-  background: #ef4444;
-  color: white;
-  border-color: #ef4444;
-}
-
-.day-count {
-  font-size: 0.9rem;
-  color: #6b7280;
-  font-weight: 400;
-  margin-left: 8px;
-}
-
-.helper-text {
-  color: #6b7280;
-  font-size: 0.85rem;
-  margin-top: 5px;
-  display: block;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-@media (max-width: 768px) {
-  .timetable-entry {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .entry-date, .entry-time, .entry-task {
-    min-width: auto;
-    width: 100%;
-  }
-  
-  .delete-btn-small {
-    align-self: flex-end;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .time-input-group {
+  .time-selector {
     flex-wrap: wrap;
+  }
+
+  .time-input-wrapper {
+    min-width: calc(33.33% - 8px);
+  }
+
+  .days-selector {
+    gap: 6px;
+  }
+
+  .day-btn {
+    min-width: calc(14.28% - 6px);
+    padding: 10px 4px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .current-time {
+    font-size: 2.25rem;
+  }
+
+  .alarm-list-section,
+  .add-alarm-form {
+    padding: 20px 16px;
+  }
+
+  .alarm-time-display {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .alarm-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .mode-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .alarm-item-right {
+    flex-direction: column;
+    gap: 8px;
   }
 }

@@ -4,14 +4,14 @@ import Home from './components/Home/Home';
 import Clock from './components/Clock/Clock';
 import Alarm from './components/Alarm/Alarm';
 import Timer from './components/Timer/Timer';
-import Stopwatch from './components/Stopwatch/Stopwatch';
+import Notes from './components/Notes/Notes';
 import Music from './components/Music/Music';
 import Goals from './components/Goals/Goals';
 import Tasks from './components/Tasks/Tasks';
 import ScreenTime from './components/ScreenTime/ScreenTime';
 import Growth from './components/Growth/Growth';
 
-type Screen = 'home' | 'clock' | 'alarm' | 'timer' | 'stopwatch' | 'music' | 'goals' | 'tasks' | 'screentime' | 'growth';
+type Screen = 'home' | 'clock' | 'alarm' | 'timer' | 'Notes' | 'music' | 'goals' | 'tasks' | 'screentime' | 'growth';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
@@ -30,8 +30,8 @@ const App: React.FC = () => {
         return <Alarm onBack={() => setCurrentScreen('home')} />;
       case 'timer':
         return <Timer onBack={() => setCurrentScreen('home')} />;
-      case 'stopwatch':
-        return <Stopwatch onBack={() => setCurrentScreen('home')} />;
+      case 'Notes':
+        return <Notes onBack={() => setCurrentScreen('home')} />;
       case 'music':
         return <Music onBack={() => setCurrentScreen('home')} />;
       case 'goals':
