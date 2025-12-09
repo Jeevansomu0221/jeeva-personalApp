@@ -1,0 +1,389 @@
+.stopwatch-display {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  padding: 40px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  border: 1px solid #374151;
+  text-align: center;
+}
+
+.stopwatch-time {
+  font-size: 4.5rem;
+  font-weight: bold;
+  color: #60a5fa;
+  margin-bottom: 30px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .stopwatch-time {
+    font-size: 3rem;
+  }
+}
+
+.stopwatch-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.control-btn {
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn.play {
+  background-color: #10b981;
+  padding: 20px 40px;
+}
+
+.control-btn.pause {
+  background-color: #f59e0b;
+  padding: 20px 40px;
+}
+
+.control-btn.reset {
+  background-color: #ef4444;
+}
+
+.control-btn.lap {
+  background-color: #6366f1;
+}
+
+.control-btn.save {
+  background-color: #8b5cf6;
+}
+
+.stopwatch-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background-color: #111827;
+  border-radius: 12px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-value.fastest {
+  color: #10b981;
+}
+
+.stat-value.slowest {
+  color: #ef4444;
+}
+
+.save-dialog {
+  background-color: #1f2937;
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  border: 2px solid #6366f1;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.save-dialog h3 {
+  margin-bottom: 20px;
+  color: #6366f1;
+  text-align: center;
+}
+
+.session-name-input {
+  width: 100%;
+  padding: 14px;
+  background-color: #111827;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.session-name-input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.dialog-save-btn,
+.dialog-cancel-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dialog-save-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.dialog-save-btn:hover {
+  background-color: #059669;
+}
+
+.dialog-cancel-btn {
+  background-color: #374151;
+  color: white;
+}
+
+.dialog-cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+.laps-section {
+  background-color: #1f2937;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  border: 1px solid #374151;
+}
+
+.laps-section h3 {
+  margin-bottom: 20px;
+  color: #d1d5db;
+}
+
+.laps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.laps-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.laps-list::-webkit-scrollbar-track {
+  background: #111827;
+  border-radius: 4px;
+}
+
+.laps-list::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.laps-list::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+.lap-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background-color: #111827;
+  border-radius: 8px;
+  border: 2px solid #374151;
+  transition: all 0.2s;
+}
+
+.lap-item:hover {
+  background-color: #1f2937;
+  transform: translateX(4px);
+}
+
+.lap-item.fastest {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.lap-item.slowest {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.lap-number {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #d1d5db;
+}
+
+.lap-times {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.lap-time {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+.lap-total {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.saved-sessions-section {
+  background-color: #1f2937;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #374151;
+}
+
+.saved-sessions-section h3 {
+  margin-bottom: 20px;
+  color: #d1d5db;
+}
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.session-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #111827;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  transition: all 0.2s;
+}
+
+.session-card:hover {
+  background-color: #1f2937;
+  border-color: #6366f1;
+}
+
+.session-info {
+  flex: 1;
+}
+
+.session-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.session-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.session-time {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.session-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.load-btn {
+  padding: 8px 16px;
+  background-color: #6366f1;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.load-btn:hover {
+  background-color: #4f46e5;
+  transform: scale(1.05);
+}
+
+.delete-session-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #dc2626;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.delete-session-btn:hover {
+  background-color: #b91c1c;
+  transform: scale(1.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.empty-state p {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  color: #9ca3af;
+}
+
+.empty-state small {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+}

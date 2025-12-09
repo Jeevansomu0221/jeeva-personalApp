@@ -1,0 +1,885 @@
+/* Use the same CSS from Tasks.css or Clock.css */.alarm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.add-alarm-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #9333ea;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(147, 51, 234, 0.3);
+}
+
+.add-alarm-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 8px rgba(147, 51, 234, 0.4);
+}
+
+.add-alarm-form {
+  background-color: #1f2937;
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  border: 1px solid #374151;
+}
+
+.add-alarm-form h3 {
+  margin-bottom: 20px;
+  color: #9333ea;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+.time-input,
+.text-input,
+.select-input {
+  width: 100%;
+  padding: 12px;
+  background-color: #111827;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+}
+
+.time-input:focus,
+.text-input:focus,
+.select-input:focus {
+  outline: none;
+  border-color: #9333ea;
+}
+
+.days-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.day-btn {
+  padding: 10px 16px;
+  background-color: #374151;
+  border: 2px solid #374151;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.day-btn.active {
+  background-color: #9333ea;
+  border-color: #9333ea;
+}
+
+.helper-text {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.save-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.save-btn {
+  background-color: #9333ea;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #7e22ce;
+}
+
+.cancel-btn {
+  background-color: #374151;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+.alarms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.empty-state p {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  color: #9ca3af;
+}
+
+.empty-state small {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+}
+
+.alarm-card {
+  background-color: #1f2937;
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid #374151;
+  transition: all 0.2s;
+}
+
+.alarm-card.enabled {
+  border-color: #10b981;
+}
+
+.alarm-card.disabled {
+  opacity: 0.6;
+}
+
+.alarm-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.alarm-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  transition: transform 0.2s;
+}
+
+.alarm-toggle:hover {
+  transform: scale(1.1);
+}
+
+.alarm-info {
+  flex: 1;
+}
+
+.alarm-time {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.alarm-label {
+  font-size: 1rem;
+  color: #d1d5db;
+  margin-bottom: 4px;
+}
+
+.alarm-days {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.delete-btn {
+  background-color: #dc2626;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+}
+/* Existing styles */
+.feature-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.feature-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.alarm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.feature-title {
+  color: white;
+  font-size: 32px;
+  margin: 0;
+}
+
+/* Tab Buttons */
+.tab-buttons {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: white;
+  color: #667eea;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.tab-btn.active:hover {
+  background: white;
+  color: #667eea;
+}
+
+.add-alarm-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.add-alarm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Form Styles */
+.add-alarm-form {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.add-alarm-form h3 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* Mode Selection */
+.modes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 10px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mode-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+.mode-btn.active {
+  border-color: #667eea;
+  background: #667eea;
+  color: white;
+}
+
+.time-input,
+.text-input,
+.select-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.time-input:focus,
+.text-input:focus,
+.select-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.days-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.day-btn {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.day-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.day-btn.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.helper-text {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn {
+  background: #10b981;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #059669;
+}
+
+.cancel-btn {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.cancel-btn:hover {
+  background: #d1d5db;
+}
+
+/* Alarms List */
+.alarms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.alarm-card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.alarm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.alarm-card.disabled {
+  opacity: 0.6;
+}
+
+.alarm-main {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.alarm-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.alarm-toggle:hover {
+  background: #f3f4f6;
+}
+
+.alarm-info {
+  flex: 1;
+}
+
+.alarm-time-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.alarm-time {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.time-left {
+  font-size: 14px;
+  color: #10b981;
+  font-weight: 600;
+  background: #d1fae5;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.alarm-label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.alarm-days {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: white;
+}
+
+.empty-state p {
+  font-size: 20px;
+  margin: 15px 0 5px 0;
+  font-weight: 600;
+}
+
+.empty-state small {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Timetable Styles */
+.timetable-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timetable-day {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.day-header {
+  margin: 0 0 15px 0;
+  color: #667eea;
+  font-size: 20px;
+  font-weight: 700;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.day-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timetable-entry {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.timetable-entry:hover {
+  background: #f3f4f6;
+  transform: translateX(5px);
+}
+
+.entry-time {
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  min-width: 140px;
+}
+
+.entry-task {
+  flex: 1;
+  font-size: 16px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.delete-btn-small {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.delete-btn-small:hover {
+  background: #fee2e2;
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .feature-title {
+    font-size: 24px;
+  }
+
+  .alarm-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tab-buttons {
+    width: 100%;
+  }
+
+  .tab-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .modes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .alarm-time {
+    font-size: 28px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-time {
+    min-width: auto;
+  }
+
+  .timetable-entry {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+/* Add these styles to your existing Alarm.css file */
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-select, .ampm-select {
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.time-select:focus, .ampm-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.time-separator {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.date-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.upcoming-timetable {
+  margin-bottom: 30px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.upcoming-timetable h3 {
+  margin-top: 0;
+  color: #1f2937;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.timetable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timetable-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  transition: transform 0.2s ease;
+}
+
+.timetable-entry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.entry-date {
+  font-weight: 600;
+  color: #1f2937;
+  min-width: 150px;
+}
+
+.entry-time {
+  color: #667eea;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.entry-task {
+  flex: 1;
+  color: #4b5563;
+  margin: 0 15px;
+}
+
+.delete-btn-small {
+  padding: 6px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn-small:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.day-count {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.helper-text {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  display: block;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .timetable-entry {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .entry-date, .entry-time, .entry-task {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .delete-btn-small {
+    align-self: flex-end;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .time-input-group {
+    flex-wrap: wrap;
+  }
+}

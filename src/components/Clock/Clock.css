@@ -1,0 +1,146 @@
+.current-time-display {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-radius: 20px;
+  border: 1px solid #374151;
+}
+
+.time-text {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #60a5fa;
+  margin-bottom: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.date-text {
+  font-size: 1.2rem;
+  color: #9ca3af;
+}
+
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+  .sessions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.session-card {
+  padding: 30px 20px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.session-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+}
+
+.session-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.session-duration {
+  font-size: 1.5rem;
+  font-weight: bold;
+  opacity: 0.9;
+}
+
+.timer-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.timer-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.timer-header h3 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.timer-display {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto 30px;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: #1f2937;
+  stroke-width: 12;
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+
+.control-btn.secondary {
+  background-color: #374151;
+}
+
+.control-btn.secondary:hover {
+  background-color: #4b5563;
+}
