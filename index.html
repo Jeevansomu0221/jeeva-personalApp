@@ -1,19 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
     
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#667eea">
+    <!-- Primary Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="description" content="Jeeva - Your personal productivity hub with notes, goals, screen time tracking, and more" />
+    <meta name="keywords" content="productivity, notes, goals, screen time, timer, alarm" />
+    <meta name="author" content="Jeeva App" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Android/Chrome Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    
+    <!-- Apple Mobile Web App Capable -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Jeeva">
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Safari Pinned Tab -->
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#667eea">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Jeeva - Personal Productivity Hub">
+    <meta property="og:description" content="Elevate Your Everyday with notes, goals, screen time tracking, and more">
+    <meta property="og:image" content="/social-image-1200x630.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Jeeva - Personal Productivity Hub">
+    <meta name="twitter:description" content="Elevate Your Everyday with notes, goals, screen time tracking, and more">
+    <meta name="twitter:image" content="/social-image-1200x630.png">
+    
+    <!-- Prevent Phone Number Detection -->
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Mobile Web App Theme Color -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Launch Screen for iOS -->
+    <link rel="apple-touch-startup-image" href="/apple-launch-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/apple-launch-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/apple-launch-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="/apple-launch-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    
+    <!-- Safe Area Insets for iOS -->
+    <style>
+      :root {
+        --safe-area-top: env(safe-area-inset-top);
+        --safe-area-bottom: env(safe-area-inset-bottom);
+        --safe-area-left: env(safe-area-inset-left);
+        --safe-area-right: env(safe-area-inset-right);
+      }
+      
+      /* Prevent pull-to-refresh on mobile */
+      body {
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Remove tap highlight on mobile */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      /* Improve text rendering */
+      body {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
     
     <title>Jeeva - Personal Productivity Hub</title>
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Loading State -->
+    <div id="loading" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    ">
+      <div style="
+        text-align: center;
+        color: white;
+      ">
+        <div style="
+          width: 80px;
+          height: 80px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 1s ease-in-out infinite;
+          margin: 0 auto 20px;
+        "></div>
+        <p style="font-size: 18px; font-weight: 500;">Loading Jeeva...</p>
+      </div>
+    </div>
+    
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      // Hide loading screen when app is ready
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loading = document.getElementById('loading');
+          if (loading) {
+            loading.style.opacity = '0';
+            setTimeout(function() {
+              loading.style.display = 'none';
+            }, 300);
+          }
+        }, 1000);
+      });
+      
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+              console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+      
+      // Prevent zoom on mobile
+      document.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+      
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+      
+      // Detect standalone mode (app installed to home screen)
+      window.addEventListener('DOMContentLoaded', function() {
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+          document.documentElement.classList.add('standalone');
+        }
+      });
+    </script>
   </body>
 </html>

@@ -3,8 +3,9 @@ import {
   TrendingUp, Award, Target, DollarSign, 
   User, Briefcase, FileText, Link as LinkIcon, 
   Plus, Trash2, Edit2, Save, X, Eye,
-  Flame, ChevronRight
+  Flame
 } from 'lucide-react';
+import './Growth.css';
 
 interface GrowthProps {
   onBack: () => void;
@@ -57,116 +58,127 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState<'fitness' | 'career' | 'finance'>('fitness');
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   const [showAddRecord, setShowAddRecord] = useState(false);
+  const [showAddMetric, setShowAddMetric] = useState(false);
+  const [showAddCertificate, setShowAddCertificate] = useState(false);
+  const [showUpdateBalance, setShowUpdateBalance] = useState(false);
+  const [showUpdateTarget, setShowUpdateTarget] = useState(false);
+  const [showAddExpense, setShowAddExpense] = useState(false);
+  
   const [newRecordValue, setNewRecordValue] = useState<number>(0);
   const [recordDate, setRecordDate] = useState(new Date().toISOString().split('T')[0]);
-
-  // Fitness Metrics
-  const [fitnessMetrics, setFitnessMetrics] = useState<FitnessMetric[]>([
-    {
-      id: 'pushups',
-      name: 'Push-ups',
-      icon: '💪',
-      unit: 'reps',
-      color: '#ef4444',
-      currentValue: 0,
-      targetValue: 100,
-      history: []
-    },
-    {
-      id: 'pullups',
-      name: 'Pull-ups',
-      icon: '🏋️',
-      unit: 'reps',
-      color: '#f59e0b',
-      currentValue: 0,
-      targetValue: 20,
-      history: []
-    },
-    {
-      id: 'height',
-      name: 'Height Growth',
-      icon: '📏',
-      unit: 'cm',
-      color: '#10b981',
-      currentValue: 0,
-      targetValue: 180,
-      history: []
-    },
-    {
-      id: 'weight',
-      name: 'Weight',
-      icon: '⚖️',
-      unit: 'kg',
-      color: '#3b82f6',
-      currentValue: 0,
-      targetValue: 70,
-      history: []
-    },
-    {
-      id: 'jawline',
-      name: 'Jawline Exercise',
-      icon: '😎',
-      unit: 'days',
-      color: '#8b5cf6',
-      currentValue: 0,
-      targetValue: 30,
-      history: []
-    },
-    {
-      id: 'face',
-      name: 'Face Treatment',
-      icon: '✨',
-      unit: 'sessions',
-      color: '#ec4899',
-      currentValue: 0,
-      targetValue: 10,
-      history: []
-    },
-    {
-      id: 'running',
-      name: 'Running',
-      icon: '🏃',
-      unit: 'km',
-      color: '#06b6d4',
-      currentValue: 0,
-      targetValue: 5,
-      history: []
-    },
-    {
-      id: 'meditation',
-      name: 'Meditation',
-      icon: '🧘',
-      unit: 'minutes',
-      color: '#a855f7',
-      currentValue: 0,
-      targetValue: 30,
-      history: []
-    }
-  ]);
-
-  // Career Data
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [profileData, setProfileData] = useState<ProfileData>({
-    resumeUrl: '',
-    portfolioUrl: '',
-    linkedInUrl: '',
-    githubUrl: '',
-    balance: 0,
-    targetBalance: 0
+  
+  const [newMetric, setNewMetric] = useState({
+    name: '',
+    unit: '',
+    icon: '💪',
+    color: '#ef4444',
+    targetValue: 0
   });
 
-  const [editingProfile, setEditingProfile] = useState(false);
-  const [tempProfile, setTempProfile] = useState<ProfileData>(profileData);
+  const [newCertificate, setNewCertificate] = useState({
+    name: '',
+    issuer: '',
+    date: new Date().toISOString().split('T')[0]
+  });
 
-  // Finance Data
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [showAddExpense, setShowAddExpense] = useState(false);
   const [newExpense, setNewExpense] = useState({
     description: '',
     amount: 0,
     category: 'Food',
     date: new Date().toISOString().split('T')[0]
   });
+
+  const [updateBalanceValue, setUpdateBalanceValue] = useState<number>(0);
+  const [updateTargetValue, setUpdateTargetValue] = useState<number>(0);
+
+  // Fitness Metrics
+  const [fitnessMetrics, setFitnessMetrics] = useState<FitnessMetric[]>([
+    {
+      id: '1',
+      name: 'Push-ups',
+      icon: '💪',
+      unit: 'reps',
+      color: '#ef4444',
+      currentValue: 25,
+      targetValue: 100,
+      history: []
+    },
+    {
+      id: '2',
+      name: 'Pull-ups',
+      icon: '🏋️',
+      unit: 'reps',
+      color: '#f59e0b',
+      currentValue: 8,
+      targetValue: 20,
+      history: []
+    },
+    {
+      id: '3',
+      name: 'Running',
+      icon: '🏃',
+      unit: 'km',
+      color: '#10b981',
+      currentValue: 3,
+      targetValue: 5,
+      history: []
+    },
+    {
+      id: '4',
+      name: 'Meditation',
+      icon: '🧘',
+      unit: 'minutes',
+      color: '#3b82f6',
+      currentValue: 15,
+      targetValue: 30,
+      history: []
+    }
+  ]);
+
+  // Career Data
+  const [certificates, setCertificates] = useState<Certificate[]>([
+    {
+      id: '1',
+      name: 'React Certification',
+      issuer: 'React Academy',
+      date: '2024-01-15',
+      fileUrl: 'https://example.com/cert1.pdf'
+    }
+  ]);
+
+  const [profileData, setProfileData] = useState<ProfileData>({
+    resumeUrl: '',
+    portfolioUrl: '',
+    linkedInUrl: 'https://linkedin.com/in/jeeva',
+    githubUrl: 'https://github.com/jeeva',
+    balance: 15000,
+    targetBalance: 25000
+  });
+
+  // Finance Data
+  const [expenses, setExpenses] = useState<Expense[]>([
+    {
+      id: '1',
+      date: '2024-12-10',
+      description: 'Groceries',
+      amount: 1500,
+      category: 'Food'
+    },
+    {
+      id: '2',
+      date: '2024-12-09',
+      description: 'Fuel',
+      amount: 800,
+      category: 'Transport'
+    },
+    {
+      id: '3',
+      date: '2024-12-08',
+      description: 'Movie Tickets',
+      amount: 600,
+      category: 'Entertainment'
+    }
+  ]);
 
   // Editing states
   const [editingMetric, setEditingMetric] = useState<string | null>(null);
@@ -192,7 +204,6 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
     if (savedProfile) {
       const profile = JSON.parse(savedProfile);
       setProfileData(profile);
-      setTempProfile(profile);
     }
   }, []);
 
@@ -227,15 +238,7 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
           value: newRecordValue
         };
 
-        const existingIndex = metric.history.findIndex(r => r.date === recordDate);
-        let updatedHistory = [...metric.history];
-
-        if (existingIndex >= 0) {
-          updatedHistory[existingIndex] = newRecord;
-        } else {
-          updatedHistory.push(newRecord);
-        }
-
+        const updatedHistory = [...metric.history, newRecord];
         updatedHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         return {
@@ -251,6 +254,42 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
     setNewRecordValue(0);
     setRecordDate(new Date().toISOString().split('T')[0]);
     setSelectedMetric(null);
+  };
+
+  // Add new fitness metric
+  const addNewMetric = () => {
+    if (!newMetric.name.trim() || !newMetric.unit.trim() || newMetric.targetValue <= 0) {
+      alert('Please fill all fields with valid values');
+      return;
+    }
+
+    const newFitnessMetric: FitnessMetric = {
+      id: Date.now().toString(),
+      name: newMetric.name,
+      icon: newMetric.icon,
+      unit: newMetric.unit,
+      color: newMetric.color,
+      currentValue: 0,
+      targetValue: newMetric.targetValue,
+      history: []
+    };
+
+    setFitnessMetrics([...fitnessMetrics, newFitnessMetric]);
+    setShowAddMetric(false);
+    setNewMetric({
+      name: '',
+      unit: '',
+      icon: '💪',
+      color: '#ef4444',
+      targetValue: 0
+    });
+  };
+
+  // Delete fitness metric
+  const deleteMetric = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this metric?')) {
+      setFitnessMetrics(fitnessMetrics.filter(metric => metric.id !== id));
+    }
   };
 
   // Calculate streak
@@ -283,18 +322,6 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
     return streak;
   };
 
-  // Get this week's progress
-  const getWeekProgress = (history: DailyRecord[]): number => {
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-
-    const weekRecords = history.filter(r => new Date(r.date) >= weekAgo);
-    if (weekRecords.length === 0) return 0;
-
-    const total = weekRecords.reduce((sum, r) => sum + r.value, 0);
-    return Math.round(total / weekRecords.length);
-  };
-
   // Get today's progress
   const getTodayProgress = (history: DailyRecord[]): number => {
     const today = new Date().toISOString().split('T')[0];
@@ -304,27 +331,26 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
 
   // Add certificate
   const addCertificate = () => {
-    const name = prompt('Enter certificate name:');
-    const issuer = prompt('Enter issuer/organization:');
-    const date = prompt('Enter date (YYYY-MM-DD):');
-    const fileUrl = prompt('Enter certificate URL or file path:');
-
-    if (name && issuer && date && fileUrl) {
-      const newCert: Certificate = {
-        id: Date.now().toString(),
-        name,
-        issuer,
-        date,
-        fileUrl
-      };
-      setCertificates([newCert, ...certificates]);
+    if (!newCertificate.name.trim() || !newCertificate.issuer.trim()) {
+      alert('Please fill all fields');
+      return;
     }
-  };
 
-  // Save profile
-  const saveProfile = () => {
-    setProfileData(tempProfile);
-    setEditingProfile(false);
+    const newCert: Certificate = {
+      id: Date.now().toString(),
+      name: newCertificate.name,
+      issuer: newCertificate.issuer,
+      date: newCertificate.date,
+      fileUrl: '#' // Placeholder for file upload
+    };
+
+    setCertificates([newCert, ...certificates]);
+    setShowAddCertificate(false);
+    setNewCertificate({
+      name: '',
+      issuer: '',
+      date: new Date().toISOString().split('T')[0]
+    });
   };
 
   // Delete certificate
@@ -334,20 +360,8 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
     }
   };
 
-  // Delete metric record
-  const deleteRecord = (metricId: string, date: string) => {
-    setFitnessMetrics(fitnessMetrics.map(metric => {
-      if (metric.id === metricId) {
-        return {
-          ...metric,
-          history: metric.history.filter(r => r.date !== date)
-        };
-      }
-      return metric;
-    }));
-  };
-
   const getProgressPercentage = (current: number, target: number): number => {
+    if (target === 0) return 0;
     return Math.min(Math.round((current / target) * 100), 100);
   };
 
@@ -362,17 +376,28 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
     setEditingMetric(null);
   };
 
-  // Handle file upload
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'resumeFile' | 'portfolioFile') => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setTempProfile({ ...tempProfile, [field]: base64 });
-      };
-      reader.readAsDataURL(file);
+  // Update balance
+  const updateBalance = () => {
+    if (updateBalanceValue < 0) {
+      alert('Please enter a valid balance');
+      return;
     }
+
+    setProfileData({ ...profileData, balance: updateBalanceValue });
+    setShowUpdateBalance(false);
+    setUpdateBalanceValue(0);
+  };
+
+  // Update target balance
+  const updateTargetBalance = () => {
+    if (updateTargetValue < 0) {
+      alert('Please enter a valid target balance');
+      return;
+    }
+
+    setProfileData({ ...profileData, targetBalance: updateTargetValue });
+    setShowUpdateTarget(false);
+    setUpdateTargetValue(0);
   };
 
   // Add expense
@@ -421,204 +446,196 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
       .reduce((sum, e) => sum + e.amount, 0);
   };
 
-  // Get expenses by category
-  const getExpensesByCategory = (): { [key: string]: number } => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    const monthExpenses = expenses.filter(e => {
-      const expenseDate = new Date(e.date);
-      return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
-    });
-
-    return monthExpenses.reduce((acc, e) => {
-      acc[e.category] = (acc[e.category] || 0) + e.amount;
-      return acc;
-    }, {} as { [key: string]: number });
-  };
-
   return (
-    <div style={styles.container}>
-      <button onClick={onBack} style={styles.backButton}>
-        ← Back to Home
-      </button>
+    <div className="growth-container">
+      {/* Header */}
+      <div className="growth-header">
+        <button onClick={onBack} className="growth-back-button">
+          ← Back
+        </button>
+        <h1 className="growth-title">Growth Tracker</h1>
+        <div style={{width: '60px'}}></div>
+      </div>
 
-      <div style={styles.content}>
-        <h2 style={styles.title}>Growth Dashboard</h2>
-
-        {/* Tabs */}
-        <div style={styles.tabs}>
+      {/* Tabs */}
+      <div className="growth-tabs-container">
+        <div className="growth-tabs">
           <button
             onClick={() => setActiveTab('fitness')}
-            style={{...styles.tab, ...(activeTab === 'fitness' ? styles.tabActive : {})}}
+            className={`growth-tab ${activeTab === 'fitness' ? 'active' : ''}`}
           >
-            <Target size={20} />
-            Fitness & Health
+            <Target size={18} />
+            <span className="growth-tab-text">Fitness & Health</span>
           </button>
           <button
             onClick={() => setActiveTab('career')}
-            style={{...styles.tab, ...(activeTab === 'career' ? styles.tabActive : {})}}
+            className={`growth-tab ${activeTab === 'career' ? 'active' : ''}`}
           >
-            <Briefcase size={20} />
-            Career & Profile
+            <Briefcase size={18} />
+            <span className="growth-tab-text">Career & Profile</span>
           </button>
           <button
             onClick={() => setActiveTab('finance')}
-            style={{...styles.tab, ...(activeTab === 'finance' ? styles.tabActive : {})}}
+            className={`growth-tab ${activeTab === 'finance' ? 'active' : ''}`}
           >
-            <DollarSign size={20} />
-            Finance
+            <DollarSign size={18} />
+            <span className="growth-tab-text">Finance</span>
           </button>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="growth-content">
         {/* FITNESS TAB */}
         {activeTab === 'fitness' && (
-          <div style={styles.section}>
-            {/* Overall Stats */}
-            <div style={styles.overviewCards}>
-              <div style={styles.overviewCard}>
-                <Flame size={32} color="#ef4444" />
-                <div>
-                  <div style={styles.overviewLabel}>Total Streak</div>
-                  <div style={styles.overviewValue}>
+          <div className="growth-fitness-content">
+            {/* Overview Cards */}
+            <div className="growth-overview-row">
+              <div className="growth-overview-card">
+                <Flame size={20} color="#ef4444" />
+                <div className="growth-overview-text">
+                  <div className="growth-overview-label">Total Streak</div>
+                  <div className="growth-overview-value">
                     {Math.max(...fitnessMetrics.map(m => calculateStreak(m.history)))} days
                   </div>
                 </div>
               </div>
-              <div style={styles.overviewCard}>
-                <TrendingUp size={32} color="#10b981" />
-                <div>
-                  <div style={styles.overviewLabel}>Active Metrics</div>
-                  <div style={styles.overviewValue}>
+              <div className="growth-overview-card">
+                <TrendingUp size={20} color="#10b981" />
+                <div className="growth-overview-text">
+                  <div className="growth-overview-label">Active</div>
+                  <div className="growth-overview-value">
                     {fitnessMetrics.filter(m => m.history.length > 0).length}/{fitnessMetrics.length}
                   </div>
                 </div>
               </div>
-              <div style={styles.overviewCard}>
-                <Award size={32} color="#f59e0b" />
-                <div>
-                  <div style={styles.overviewLabel}>Goals Achieved</div>
-                  <div style={styles.overviewValue}>
+              <div className="growth-overview-card">
+                <Award size={20} color="#f59e0b" />
+                <div className="growth-overview-text">
+                  <div className="growth-overview-label">Achieved</div>
+                  <div className="growth-overview-value">
                     {fitnessMetrics.filter(m => m.currentValue >= m.targetValue).length}
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Add New Metric Button */}
+            <button 
+              className="growth-add-metric-btn"
+              onClick={() => setShowAddMetric(true)}
+            >
+              <Plus size={18} />
+              Add New Fitness Goal
+            </button>
+
             {/* Metrics Grid */}
-            <div style={styles.metricsGrid}>
+            <div className="growth-metrics-grid">
               {fitnessMetrics.map(metric => {
                 const streak = calculateStreak(metric.history);
-                const weekAvg = getWeekProgress(metric.history);
                 const todayValue = getTodayProgress(metric.history);
                 const progress = getProgressPercentage(metric.currentValue, metric.targetValue);
 
                 return (
-                  <div key={metric.id} style={{...styles.metricCard, borderColor: metric.color}}>
-                    <div style={styles.metricHeader}>
-                      <span style={styles.metricIcon}>{metric.icon}</span>
-                      <h4 style={styles.metricName}>{metric.name}</h4>
-                    </div>
-
-                    <div style={styles.metricStats}>
-                      <div style={styles.statRow}>
-                        <span>Current:</span>
-                        <strong style={{ color: metric.color }}>
-                          {metric.currentValue} {metric.unit}
-                        </strong>
+                  <div key={metric.id} className="growth-metric-card" style={{borderColor: metric.color}}>
+                    <div className="growth-metric-header">
+                      <span className="growth-metric-icon">{metric.icon}</span>
+                      <div className="growth-metric-title">
+                        <div className="growth-metric-name">{metric.name}</div>
+                        <div className="growth-metric-unit">{metric.unit}</div>
                       </div>
-                      <div style={styles.statRow}>
-                        <span>Target:</span>
-                        {editingMetric === metric.id ? (
-                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                            <input
-                              type="number"
-                              value={tempTarget}
-                              onChange={(e) => setTempTarget(parseFloat(e.target.value) || 0)}
-                              style={{ width: '60px', padding: '2px 4px', borderRadius: '4px', border: '1px solid #ccc' }}
-                              autoFocus
-                            />
-                            <button
-                              onClick={() => updateMetricTarget(metric.id, tempTarget)}
-                              style={{ padding: '2px 6px', fontSize: '12px', cursor: 'pointer', background: '#10b981', color: 'white', border: 'none', borderRadius: '4px' }}
-                            >
-                              ✓
-                            </button>
-                            <button
-                              onClick={() => setEditingMetric(null)}
-                              style={{ padding: '2px 6px', fontSize: '12px', cursor: 'pointer', background: '#ef4444', color: 'white', border: 'none', borderRadius: '4px' }}
-                            >
-                              ✕
-                            </button>
+                      <div className="growth-metric-actions">
+                        {streak > 0 && (
+                          <div className="growth-streak-badge">
+                            <Flame size={12} color="#ef4444" />
+                            <span className="growth-streak-text">{streak}d</span>
                           </div>
-                        ) : (
-                          <>
-                            <strong>{metric.targetValue} {metric.unit}</strong>
-                            <button
-                              onClick={() => {
-                                setEditingMetric(metric.id);
-                                setTempTarget(metric.targetValue);
-                              }}
-                              style={{ 
-                                marginLeft: '8px', 
-                                padding: '2px 6px', 
-                                fontSize: '12px',
-                                cursor: 'pointer',
-                                background: 'transparent',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px'
-                              }}
-                            >
-                              <Edit2 size={12} />
-                            </button>
-                          </>
                         )}
-                      </div>
-                      <div style={styles.statRow}>
-                        <span>Today:</span>
-                        <strong>{todayValue} {metric.unit}</strong>
-                      </div>
-                      <div style={styles.statRow}>
-                        <span>Week Avg:</span>
-                        <strong>{weekAvg} {metric.unit}</strong>
+                        <button
+                          onClick={() => deleteMetric(metric.id)}
+                          className="growth-delete-metric-btn"
+                          title="Delete metric"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
-                    <div style={styles.metricProgress}>
-                      <div style={styles.progressLabel}>{progress}% Complete</div>
-                      <div style={styles.progressBarContainer}>
+                    <div className="growth-metric-progress">
+                      <div className="growth-progress-bar-container">
                         <div 
+                          className="growth-progress-bar-fill"
                           style={{ 
-                            ...styles.progressBarFill,
                             width: `${progress}%`,
                             backgroundColor: metric.color
                           }}
                         />
                       </div>
+                      <div className="growth-progress-text">{progress}%</div>
                     </div>
 
-                    {/* Streak */}
-                    {streak > 0 && (
-                      <div style={styles.metricStreak}>
-                        <Flame size={16} color="#ef4444" />
-                        <span>{streak} day streak!</span>
+                    {/* Values */}
+                    <div className="growth-metric-values">
+                      <div className="growth-metric-value">
+                        <div className="growth-value-label">Current</div>
+                        <div className="growth-value-number" style={{color: metric.color}}>
+                          {metric.currentValue}
+                        </div>
                       </div>
-                    )}
+                      <div className="growth-metric-value">
+                        <div className="growth-value-label">Target</div>
+                        <div className="growth-value-number">
+                          {editingMetric === metric.id ? (
+                            <div className="growth-target-edit">
+                              <input
+                                type="number"
+                                value={tempTarget}
+                                onChange={(e) => setTempTarget(parseFloat(e.target.value) || 0)}
+                                className="growth-target-input"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => updateMetricTarget(metric.id, tempTarget)}
+                                className="growth-target-save"
+                              >
+                                ✓
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              {metric.targetValue}
+                              <button
+                                onClick={() => {
+                                  setEditingMetric(metric.id);
+                                  setTempTarget(metric.targetValue);
+                                }}
+                                className="growth-edit-btn"
+                              >
+                                <Edit2 size={12} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="growth-metric-value">
+                        <div className="growth-value-label">Today</div>
+                        <div className="growth-value-number">{todayValue}</div>
+                      </div>
+                    </div>
 
                     {/* Actions */}
-                    <div style={styles.metricActions}>
+                    <div className="growth-metric-actions-row">
                       <button
                         onClick={() => {
                           setSelectedMetric(metric.id);
                           setNewRecordValue(metric.currentValue);
                           setShowAddRecord(true);
                         }}
-                        style={styles.metricBtnAdd}
+                        className="growth-add-record-btn"
                       >
-                        <Plus size={16} />
-                        Add Record
+                        <Plus size={14} />
+                        Record
                       </button>
                       {metric.history.length > 0 && (
                         <button
@@ -626,261 +643,117 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
                             const metricWithHistory = fitnessMetrics.find(m => m.id === metric.id);
                             if (metricWithHistory) {
                               const historyText = metricWithHistory.history
-                                .slice(0, 10)
+                                .slice(0, 5)
                                 .map(h => `${h.date}: ${h.value} ${metric.unit}`)
                                 .join('\n');
-                              alert(`Recent history for ${metric.name}:\n\n${historyText}`);
+                              alert(`Recent history:\n\n${historyText}`);
                             }
                           }}
-                          style={styles.metricBtnView}
+                          className="growth-view-history-btn"
                         >
-                          <Eye size={16} />
-                          History
+                          <Eye size={14} />
+                          View
                         </button>
                       )}
                     </div>
-
-                    {/* Recent Records */}
-                    {metric.history.length > 0 && (
-                      <div style={styles.metricRecent}>
-                        <div style={styles.recentLabel}>Recent Entries:</div>
-                        {metric.history.slice(0, 3).map((record, idx) => (
-                          <div key={idx} style={styles.recentEntry}>
-                            <span>{record.date}</span>
-                            <span>{record.value} {metric.unit}</span>
-                            <button
-                              onClick={() => deleteRecord(metric.id, record.date)}
-                              style={styles.deleteMiniBtn}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 );
               })}
             </div>
-
-            {/* Add Record Modal */}
-            {showAddRecord && selectedMetric && (
-              <div style={styles.modalOverlay}>
-                <div style={styles.modalContent}>
-                  <h3>Add Record</h3>
-                  <div style={styles.modalForm}>
-                    <div style={styles.formGroup}>
-                      <label>Date</label>
-                      <input
-                        type="date"
-                        value={recordDate}
-                        onChange={(e) => setRecordDate(e.target.value)}
-                        style={styles.input}
-                      />
-                    </div>
-                    <div style={styles.formGroup}>
-                      <label>Value ({fitnessMetrics.find(m => m.id === selectedMetric)?.unit})</label>
-                      <input
-                        type="number"
-                        value={newRecordValue}
-                        onChange={(e) => setNewRecordValue(parseFloat(e.target.value) || 0)}
-                        style={styles.input}
-                        autoFocus
-                      />
-                    </div>
-                    <div style={styles.modalActions}>
-                      <button onClick={addRecord} style={styles.modalSaveBtn}>
-                        <Save size={18} />
-                        Save
-                      </button>
-                      <button onClick={() => {
-                        setShowAddRecord(false);
-                        setSelectedMetric(null);
-                      }} style={styles.modalCancelBtn}>
-                        <X size={18} />
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
         {/* CAREER TAB */}
         {activeTab === 'career' && (
-          <div style={styles.section}>
-            {/* Profile Links */}
-            <div style={styles.profileCard}>
-              <div style={styles.profileHeader}>
-                <User size={32} color="#6366f1" />
-                <h3>Professional Profile</h3>
-                {!editingProfile && (
-                  <button onClick={() => setEditingProfile(true)} style={styles.editProfileBtn}>
-                    <Edit2 size={18} />
-                    Edit
-                  </button>
-                )}
+          <div className="growth-career-content">
+            {/* Profile Section */}
+            <div className="growth-profile-card">
+              <div className="growth-card-header">
+                <User size={20} color="#6366f1" />
+                <h3 className="growth-card-title">Professional Profile</h3>
               </div>
-
-              {editingProfile ? (
-                <div style={styles.profileForm}>
-                  <div style={styles.formGroup}>
-                    <label>Resume URL (optional)</label>
-                    <input
-                      type="text"
-                      value={tempProfile.resumeUrl}
-                      onChange={(e) => setTempProfile({ ...tempProfile, resumeUrl: e.target.value })}
-                      placeholder="https://drive.google.com/..."
-                      style={styles.input}
-                    />
-                    <label style={{ marginTop: '8px' }}>Or Upload Resume File</label>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload(e, 'resumeFile')}
-                      style={styles.input}
-                    />
-                    {tempProfile.resumeFile && <small style={{ color: '#10b981' }}>✓ File uploaded</small>}
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label>Portfolio URL (optional)</label>
-                    <input
-                      type="text"
-                      value={tempProfile.portfolioUrl}
-                      onChange={(e) => setTempProfile({ ...tempProfile, portfolioUrl: e.target.value })}
-                      placeholder="https://yourportfolio.com"
-                      style={styles.input}
-                    />
-                    <label style={{ marginTop: '8px' }}>Or Upload Portfolio File</label>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload(e, 'portfolioFile')}
-                      style={styles.input}
-                    />
-                    {tempProfile.portfolioFile && <small style={{ color: '#10b981' }}>✓ File uploaded</small>}
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label>LinkedIn URL</label>
-                    <input
-                      type="text"
-                      value={tempProfile.linkedInUrl}
-                      onChange={(e) => setTempProfile({ ...tempProfile, linkedInUrl: e.target.value })}
-                      placeholder="https://linkedin.com/in/username"
-                      style={styles.input}
-                    />
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label>GitHub URL</label>
-                    <input
-                      type="text"
-                      value={tempProfile.githubUrl}
-                      onChange={(e) => setTempProfile({ ...tempProfile, githubUrl: e.target.value })}
-                      placeholder="https://github.com/username"
-                      style={styles.input}
-                    />
-                  </div>
-                  <div style={styles.profileActions}>
-                    <button onClick={saveProfile} style={styles.saveBtn}>
-                      <Save size={18} />
-                      Save
-                    </button>
-                    <button onClick={() => {
-                      setEditingProfile(false);
-                      setTempProfile(profileData);
-                    }} style={styles.cancelBtn}>
-                      Cancel
-                    </button>
-                  </div>
+              
+              <div className="growth-profile-links">
+                <div className="growth-profile-link">
+                  <LinkIcon size={16} />
+                  <input
+                    type="text"
+                    value={profileData.linkedInUrl}
+                    onChange={(e) => setProfileData({...profileData, linkedInUrl: e.target.value})}
+                    placeholder="LinkedIn URL"
+                    className="growth-profile-input"
+                  />
                 </div>
-              ) : (
-                <div style={styles.profileLinks}>
-                  {(profileData.resumeUrl || profileData.resumeFile) && (
-                    <a 
-                      href={profileData.resumeFile || profileData.resumeUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      style={styles.profileLink}
-                      download={profileData.resumeFile ? "resume.pdf" : undefined}
-                    >
-                      <FileText size={20} />
-                      <span>Resume {profileData.resumeFile && '(File)'}</span>
-                      <ChevronRight size={18} />
-                    </a>
-                  )}
-                  {(profileData.portfolioUrl || profileData.portfolioFile) && (
-                    <a 
-                      href={profileData.portfolioFile || profileData.portfolioUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      style={styles.profileLink}
-                      download={profileData.portfolioFile ? "portfolio.pdf" : undefined}
-                    >
-                      <Briefcase size={20} />
-                      <span>Portfolio {profileData.portfolioFile && '(File)'}</span>
-                      <ChevronRight size={18} />
-                    </a>
-                  )}
-                  {profileData.linkedInUrl && (
-                    <a href={profileData.linkedInUrl} target="_blank" rel="noopener noreferrer" style={styles.profileLink}>
-                      <LinkIcon size={20} />
-                      <span>LinkedIn</span>
-                      <ChevronRight size={18} />
-                    </a>
-                  )}
-                  {profileData.githubUrl && (
-                    <a href={profileData.githubUrl} target="_blank" rel="noopener noreferrer" style={styles.profileLink}>
-                      <LinkIcon size={20} />
-                      <span>GitHub</span>
-                      <ChevronRight size={18} />
-                    </a>
-                  )}
-                  {!profileData.resumeUrl && !profileData.portfolioUrl && !profileData.linkedInUrl && !profileData.githubUrl && !profileData.resumeFile && !profileData.portfolioFile && (
-                    <p style={styles.emptyText}>No profile links added yet. Click Edit to add them.</p>
-                  )}
+                <div className="growth-profile-link">
+                  <LinkIcon size={16} />
+                  <input
+                    type="text"
+                    value={profileData.githubUrl}
+                    onChange={(e) => setProfileData({...profileData, githubUrl: e.target.value})}
+                    placeholder="GitHub URL"
+                    className="growth-profile-input"
+                  />
                 </div>
-              )}
+                <div className="growth-profile-link">
+                  <FileText size={16} />
+                  <input
+                    type="text"
+                    value={profileData.resumeUrl}
+                    onChange={(e) => setProfileData({...profileData, resumeUrl: e.target.value})}
+                    placeholder="Resume URL (Google Drive/Dropbox)"
+                    className="growth-profile-input"
+                  />
+                </div>
+                <div className="growth-profile-link">
+                  <Briefcase size={16} />
+                  <input
+                    type="text"
+                    value={profileData.portfolioUrl}
+                    onChange={(e) => setProfileData({...profileData, portfolioUrl: e.target.value})}
+                    placeholder="Portfolio URL"
+                    className="growth-profile-input"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Certificates */}
-            <div style={styles.certificatesCard}>
-              <div style={styles.certificatesHeader}>
-                <Award size={28} color="#f59e0b" />
-                <h3>Certificates & Achievements</h3>
-                <button onClick={addCertificate} style={styles.addCertBtn}>
+            {/* Certificates Section */}
+            <div className="growth-certificates-card">
+              <div className="growth-card-header">
+                <Award size={20} color="#f59e0b" />
+                <h3 className="growth-card-title">Certificates ({certificates.length})</h3>
+                <button onClick={() => setShowAddCertificate(true)} className="growth-add-btn-main">
                   <Plus size={20} />
-                  Add Certificate
                 </button>
               </div>
 
               {certificates.length === 0 ? (
-                <div style={styles.emptyState}>
-                  <Award size={64} color="#4b5563" />
-                  <p>No certificates added yet</p>
-                  <small>Click "Add Certificate" to upload your achievements</small>
+                <div className="growth-empty-state">
+                  <Award size={32} color="#4b5563" />
+                  <p className="growth-empty-text">No certificates yet</p>
                 </div>
               ) : (
-                <div style={styles.certificatesList}>
-                  {certificates.map(cert => (
-                    <div key={cert.id} style={styles.certificateItem}>
-                      <div style={styles.certIcon}>📜</div>
-                      <div style={styles.certInfo}>
-                        <div style={styles.certName}>{cert.name}</div>
-                        <div style={styles.certIssuer}>{cert.issuer}</div>
-                        <div style={styles.certDate}>{cert.date}</div>
+                <div className="growth-certificates-list">
+                  {certificates.slice(0, 4).map(cert => (
+                    <div key={cert.id} className="growth-certificate-item">
+                      <div className="growth-cert-icon">📜</div>
+                      <div className="growth-cert-info">
+                        <div className="growth-cert-name">{cert.name}</div>
+                        <div className="growth-cert-issuer">{cert.issuer} • {cert.date}</div>
                       </div>
-                      <div style={styles.certActions}>
-                        <a href={cert.fileUrl} target="_blank" rel="noopener noreferrer" style={styles.viewCertBtn}>
-                          <Eye size={18} />
+                      <div className="growth-cert-actions">
+                        <a href={cert.fileUrl} target="_blank" rel="noopener noreferrer" className="growth-view-btn-mini">
+                          <Eye size={14} />
                         </a>
-                        <button onClick={() => deleteCertificate(cert.id)} style={styles.deleteCertBtn}>
-                          <Trash2 size={18} />
+                        <button onClick={() => deleteCertificate(cert.id)} className="growth-delete-btn-mini">
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
                   ))}
+                  {certificates.length > 4 && (
+                    <div className="growth-more-text">+ {certificates.length - 4} more</div>
+                  )}
                 </div>
               )}
             </div>
@@ -889,804 +762,402 @@ const Growth: React.FC<GrowthProps> = ({ onBack }) => {
 
         {/* FINANCE TAB */}
         {activeTab === 'finance' && (
-          <div style={styles.section}>
+          <div className="growth-finance-content">
             {/* Balance Cards */}
-            <div style={styles.financeCardsRow}>
-              <div style={styles.balanceCard}>
-                <DollarSign size={40} color="#10b981" />
-                <div>
-                  <div style={styles.balanceLabel}>Current Balance</div>
-                  <div style={styles.balanceAmount}>
-                    ₹{profileData.balance.toLocaleString('en-IN')}
-                  </div>
+            <div className="growth-balance-row">
+              <div className="growth-balance-card">
+                <DollarSign size={24} color="#10b981" />
+                <div className="growth-balance-text">
+                  <div className="growth-balance-label">Current Balance</div>
+                  <div className="growth-balance-amount">₹{profileData.balance.toLocaleString('en-IN')}</div>
                 </div>
                 <button
                   onClick={() => {
-                    const newBalance = prompt('Enter current balance:', profileData.balance.toString());
-                    if (newBalance !== null) {
-                      setProfileData({ ...profileData, balance: parseFloat(newBalance) || 0 });
-                    }
+                    setUpdateBalanceValue(profileData.balance);
+                    setShowUpdateBalance(true);
                   }}
-                  style={styles.updateBalanceBtn}
+                  className="growth-update-balance-btn"
                 >
-                  <Edit2 size={18} />
-                  Update
+                  <Edit2 size={14} />
                 </button>
               </div>
-
-              <div style={{...styles.balanceCard, borderColor: '#f59e0b'}}>
-                <Target size={40} color="#f59e0b" />
-                <div>
-                  <div style={styles.balanceLabel}>Target Balance (This Month)</div>
-                  <div style={{...styles.balanceAmount, color: '#f59e0b'}}>
-                    ₹{profileData.targetBalance.toLocaleString('en-IN')}
-                  </div>
+              <div className="growth-balance-card">
+                <Target size={24} color="#f59e0b" />
+                <div className="growth-balance-text">
+                  <div className="growth-balance-label">Target Balance</div>
+                  <div className="growth-balance-amount target">₹{profileData.targetBalance.toLocaleString('en-IN')}</div>
                 </div>
                 <button
                   onClick={() => {
-                    const newTarget = prompt('Enter target balance for this month:', profileData.targetBalance.toString());
-                    if (newTarget !== null) {
-                      setProfileData({ ...profileData, targetBalance: parseFloat(newTarget) || 0 });
-                    }
+                    setUpdateTargetValue(profileData.targetBalance);
+                    setShowUpdateTarget(true);
                   }}
-                  style={styles.updateBalanceBtn}
+                  className="growth-update-balance-btn"
                 >
-                  <Edit2 size={18} />
-                  Update
+                  <Edit2 size={14} />
                 </button>
               </div>
             </div>
 
             {/* Monthly Summary */}
-            <div style={styles.monthlySummary}>
-              <h3>This Month's Summary</h3>
-              <div style={styles.summaryStats}>
-                <div style={styles.summaryItem}>
-                  <span>Total Expenses:</span>
-                  <strong style={{ color: '#ef4444' }}>₹{getMonthlyExpenses().toLocaleString('en-IN')}</strong>
+            <div className="growth-summary-card">
+              <h3 className="growth-card-title">Monthly Summary</h3>
+              <div className="growth-summary-stats">
+                <div className="growth-summary-item">
+                  <span>Expenses:</span>
+                  <strong className="expense-amount">₹{getMonthlyExpenses().toLocaleString('en-IN')}</strong>
                 </div>
-                <div style={styles.summaryItem}>
-                  <span>Remaining to Target:</span>
-                  <strong style={{ color: profileData.balance >= profileData.targetBalance ? '#10b981' : '#f59e0b' }}>
-                    ₹{Math.max(0, profileData.targetBalance - profileData.balance).toLocaleString('en-IN')}
+                <div className="growth-summary-item">
+                  <span>Remaining:</span>
+                  <strong className={profileData.balance - getMonthlyExpenses() >= profileData.targetBalance ? 'positive' : 'warning'}>
+                    ₹{Math.max(0, profileData.balance - getMonthlyExpenses()).toLocaleString('en-IN')}
                   </strong>
                 </div>
-                <div style={styles.summaryItem}>
+                <div className="growth-summary-item">
                   <span>Progress:</span>
                   <strong>
-                    {profileData.targetBalance > 0 
+                    {profileData.balance > 0 
                       ? Math.round((profileData.balance / profileData.targetBalance) * 100) 
                       : 0}%
                   </strong>
                 </div>
               </div>
-
-              {/* Progress Bar */}
-              {profileData.targetBalance > 0 && (
-                <div style={{...styles.metricProgress, marginTop: '16px'}}>
-                  <div style={styles.progressBarContainer}>
-                    <div 
-                      style={{ 
-                        ...styles.progressBarFill,
-                        width: `${Math.min((profileData.balance / profileData.targetBalance) * 100, 100)}%`,
-                        backgroundColor: profileData.balance >= profileData.targetBalance ? '#10b981' : '#f59e0b'
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Expenses by Category */}
-            {Object.keys(getExpensesByCategory()).length > 0 && (
-              <div style={styles.categoryBreakdown}>
-                <h3>Expenses by Category</h3>
-                <div style={styles.categoryList}>
-                  {Object.entries(getExpensesByCategory()).map(([category, amount]) => (
-                    <div key={category} style={styles.categoryItem}>
-                      <span>{category}</span>
-                      <strong>₹{amount.toLocaleString('en-IN')}</strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Expenses List */}
-            <div style={styles.expensesCard}>
-              <div style={styles.expensesHeader}>
-                <h3>Daily Expenses</h3>
-                <button onClick={() => setShowAddExpense(true)} style={styles.addExpenseBtn}>
+            <div className="growth-expenses-card">
+              <div className="growth-card-header">
+                <h3 className="growth-card-title">Recent Expenses ({expenses.length})</h3>
+                <button onClick={() => setShowAddExpense(true)} className="growth-add-btn-main">
                   <Plus size={20} />
-                  Add Expense
                 </button>
               </div>
 
               {expenses.length === 0 ? (
-                <div style={styles.emptyState}>
-                  <DollarSign size={64} color="#4b5563" />
-                  <p>No expenses recorded yet</p>
-                  <small>Click "Add Expense" to track your spending</small>
+                <div className="growth-empty-state">
+                  <DollarSign size={32} color="#4b5563" />
+                  <p className="growth-empty-text">No expenses recorded</p>
                 </div>
               ) : (
-                <div style={styles.expensesList}>
-                  {expenses.slice(0, 20).map(expense => (
-                    <div key={expense.id} style={styles.expenseItem}>
-                      <div style={styles.expenseInfo}>
-                        <div style={styles.expenseDescription}>{expense.description}</div>
-                        <div style={styles.expenseMeta}>
-                          <span style={styles.expenseCategory}>{expense.category}</span>
-                          <span style={styles.expenseDate}>{expense.date}</span>
+                <div className="growth-expenses-list">
+                  {expenses.slice(0, 5).map(expense => (
+                    <div key={expense.id} className="growth-expense-item">
+                      <div className="growth-expense-info">
+                        <div className="growth-expense-description">{expense.description}</div>
+                        <div className="growth-expense-meta">
+                          <span className="growth-expense-category">{expense.category}</span>
+                          <span className="growth-expense-date">{expense.date}</span>
                         </div>
                       </div>
-                      <div style={styles.expenseActions}>
-                        <div style={styles.expenseAmount}>₹{expense.amount.toLocaleString('en-IN')}</div>
-                        <button onClick={() => deleteExpense(expense.id)} style={styles.deleteExpenseBtn}>
-                          <Trash2 size={18} />
+                      <div className="growth-expense-actions">
+                        <div className="growth-expense-amount">₹{expense.amount.toLocaleString('en-IN')}</div>
+                        <button onClick={() => deleteExpense(expense.id)} className="growth-delete-expense-btn">
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
                   ))}
+                  {expenses.length > 5 && (
+                    <div className="growth-more-text">+ {expenses.length - 5} more</div>
+                  )}
                 </div>
               )}
             </div>
-
-            {/* Add Expense Modal */}
-            {showAddExpense && (
-              <div style={styles.modalOverlay}>
-                <div style={styles.modalContent}>
-                  <h3>Add Expense</h3>
-                  <div style={styles.modalForm}>
-                    <div style={styles.formGroup}>
-                      <label>Date</label>
-                      <input
-                        type="date"
-                        value={newExpense.date}
-                        onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
-                        style={styles.input}
-                      />
-                    </div>
-                    <div style={styles.formGroup}>
-                      <label>Description</label>
-                      <input
-                        type="text"
-                        value={newExpense.description}
-                        onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                        placeholder="e.g., Lunch at restaurant"
-                        style={styles.input}
-                        autoFocus
-                      />
-                    </div>
-                    <div style={styles.formGroup}>
-                      <label>Amount (₹)</label>
-                      <input
-                        type="number"
-                        value={newExpense.amount}
-                        onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) || 0 })}
-                        style={styles.input}
-                      />
-                    </div>
-                    <div style={styles.formGroup}>
-                      <label>Category</label>
-                      <select
-                        value={newExpense.category}
-                        onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-                        style={styles.input}
-                      >
-                        <option value="Food">Food</option>
-                        <option value="Transport">Transport</option>
-                        <option value="Shopping">Shopping</option>
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Bills">Bills</option>
-                        <option value="Health">Health</option>
-                        <option value="Education">Education</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-                    <div style={styles.modalActions}>
-                      <button onClick={addExpense} style={styles.modalSaveBtn}>
-                        <Save size={18} />
-                        Save
-                      </button>
-                      <button onClick={() => setShowAddExpense(false)} style={styles.modalCancelBtn}>
-                        <X size={18} />
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
+
+      {/* Add New Metric Modal */}
+      {showAddMetric && (
+        <div className="growth-modal-overlay">
+          <div className="growth-modal-content">
+            <div className="growth-modal-header">
+              <h3>Add New Fitness Goal</h3>
+              <button onClick={() => setShowAddMetric(false)} className="growth-modal-close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="growth-modal-body">
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Goal Name</label>
+                <input
+                  type="text"
+                  value={newMetric.name}
+                  onChange={(e) => setNewMetric({...newMetric, name: e.target.value})}
+                  placeholder="e.g., Yoga, Swimming, etc."
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Unit of Measurement</label>
+                <input
+                  type="text"
+                  value={newMetric.unit}
+                  onChange={(e) => setNewMetric({...newMetric, unit: e.target.value})}
+                  placeholder="e.g., reps, km, minutes"
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Target Value</label>
+                <input
+                  type="number"
+                  value={newMetric.targetValue}
+                  onChange={(e) => setNewMetric({...newMetric, targetValue: parseFloat(e.target.value) || 0})}
+                  placeholder="e.g., 100, 5, 30"
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Color</label>
+                <div className="growth-color-picker">
+                  {['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'].map(color => (
+                    <button
+                      key={color}
+                      className={`growth-color-option ${newMetric.color === color ? 'selected' : ''}`}
+                      style={{backgroundColor: color}}
+                      onClick={() => setNewMetric({...newMetric, color})}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="growth-modal-actions">
+                <button onClick={addNewMetric} className="growth-modal-save">
+                  <Save size={16} />
+                  Add Goal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Record Modal */}
+      {showAddRecord && selectedMetric && (
+        <div className="growth-modal-overlay">
+          <div className="growth-modal-content">
+            <div className="growth-modal-header">
+              <h3>Add Record</h3>
+              <button onClick={() => setShowAddRecord(false)} className="growth-modal-close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="growth-modal-body">
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Date</label>
+                <input
+                  type="date"
+                  value={recordDate}
+                  onChange={(e) => setRecordDate(e.target.value)}
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">
+                  Value ({fitnessMetrics.find(m => m.id === selectedMetric)?.unit})
+                </label>
+                <input
+                  type="number"
+                  value={newRecordValue}
+                  onChange={(e) => setNewRecordValue(parseFloat(e.target.value) || 0)}
+                  className="growth-modal-input"
+                  autoFocus
+                />
+              </div>
+              <div className="growth-modal-actions">
+                <button onClick={addRecord} className="growth-modal-save">
+                  <Save size={16} />
+                  Save Record
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Certificate Modal */}
+      {showAddCertificate && (
+        <div className="growth-modal-overlay">
+          <div className="growth-modal-content">
+            <div className="growth-modal-header">
+              <h3>Add Certificate</h3>
+              <button onClick={() => setShowAddCertificate(false)} className="growth-modal-close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="growth-modal-body">
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Certificate Name</label>
+                <input
+                  type="text"
+                  value={newCertificate.name}
+                  onChange={(e) => setNewCertificate({...newCertificate, name: e.target.value})}
+                  placeholder="e.g., React Developer Certification"
+                  className="growth-modal-input"
+                  autoFocus
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Issuing Organization</label>
+                <input
+                  type="text"
+                  value={newCertificate.issuer}
+                  onChange={(e) => setNewCertificate({...newCertificate, issuer: e.target.value})}
+                  placeholder="e.g., Coursera, Udemy"
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Date Received</label>
+                <input
+                  type="date"
+                  value={newCertificate.date}
+                  onChange={(e) => setNewCertificate({...newCertificate, date: e.target.value})}
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-modal-actions">
+                <button onClick={addCertificate} className="growth-modal-save">
+                  <Save size={16} />
+                  Add Certificate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Balance Modal */}
+      {showUpdateBalance && (
+        <div className="growth-modal-overlay">
+          <div className="growth-modal-content">
+            <div className="growth-modal-header">
+              <h3>Update Current Balance</h3>
+              <button onClick={() => setShowUpdateBalance(false)} className="growth-modal-close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="growth-modal-body">
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Current Balance (₹)</label>
+                <input
+                  type="number"
+                  value={updateBalanceValue}
+                  onChange={(e) => setUpdateBalanceValue(parseFloat(e.target.value) || 0)}
+                  className="growth-modal-input"
+                  autoFocus
+                />
+              </div>
+              <div className="growth-modal-actions">
+                <button onClick={updateBalance} className="growth-modal-save">
+                  <Save size={16} />
+                  Update Balance
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Target Balance Modal */}
+      {showUpdateTarget && (
+        <div className="growth-modal-overlay">
+          <div className="growth-modal-content">
+            <div className="growth-modal-header">
+              <h3>Update Target Balance</h3>
+              <button onClick={() => setShowUpdateTarget(false)} className="growth-modal-close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="growth-modal-body">
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Target Balance (₹)</label>
+                <input
+                  type="number"
+                  value={updateTargetValue}
+                  onChange={(e) => setUpdateTargetValue(parseFloat(e.target.value) || 0)}
+                  className="growth-modal-input"
+                  autoFocus
+                />
+              </div>
+              <div className="growth-modal-actions">
+                <button onClick={updateTargetBalance} className="growth-modal-save">
+                  <Save size={16} />
+                  Update Target
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Expense Modal */}
+      {showAddExpense && (
+        <div className="growth-modal-overlay">
+          <div className="growth-modal-content">
+            <div className="growth-modal-header">
+              <h3>Add Expense</h3>
+              <button onClick={() => setShowAddExpense(false)} className="growth-modal-close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="growth-modal-body">
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Date</label>
+                <input
+                  type="date"
+                  value={newExpense.date}
+                  onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Description</label>
+                <input
+                  type="text"
+                  value={newExpense.description}
+                  onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+                  placeholder="e.g., Lunch, Groceries, etc."
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Amount (₹)</label>
+                <input
+                  type="number"
+                  value={newExpense.amount}
+                  onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) || 0 })}
+                  className="growth-modal-input"
+                />
+              </div>
+              <div className="growth-form-group">
+                <label className="growth-modal-label">Category</label>
+                <select
+                  value={newExpense.category}
+                  onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                  className="growth-modal-input"
+                >
+                  <option value="Food">Food</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Bills">Bills</option>
+                  <option value="Health">Health</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div className="growth-modal-actions">
+                <button onClick={addExpense} className="growth-modal-save">
+                  <Save size={16} />
+                  Add Expense
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    minHeight: '100vh',
-    backgroundColor: '#0f172a',
-    color: '#e2e8f0',
-    padding: '24px',
-  },
-  backButton: {
-    background: '#1e293b',
-    color: '#e2e8f0',
-    border: 'none',
-    padding: '12px 24px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginBottom: '24px',
-  },
-  content: {
-    maxWidth: '1400px',
-    margin: '0 auto',
-  },
-  title: {
-    fontSize: '36px',
-    fontWeight: 'bold',
-    marginBottom: '32px',
-    background: 'linear-gradient(to right, #60a5fa, #a78bfa)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-  },
-  tabs: {
-    display: 'flex',
-    gap: '12px',
-    marginBottom: '32px',
-    flexWrap: 'wrap',
-  },
-  tab: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '12px 24px',
-    background: '#1e293b',
-    border: 'none',
-    borderRadius: '8px',
-    color: '#94a3b8',
-    cursor: 'pointer',
-    fontSize: '16px',
-    transition: 'all 0.3s',
-  },
-  tabActive: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-  },
-  section: {
-    marginTop: '24px',
-  },
-  overviewCards: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px',
-    marginBottom: '32px',
-  },
-  overviewCard: {
-    background: '#1e293b',
-    padding: '24px',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  overviewLabel: {
-    color: '#94a3b8',
-    fontSize: '14px',
-  },
-  overviewValue: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    color: '#e2e8f0',
-  },
-  metricsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-    gap: '24px',
-  },
-  metricCard: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '20px',
-    borderLeft: '4px solid',
-  },
-  metricHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '16px',
-  },
-  metricIcon: {
-    fontSize: '32px',
-  },
-  metricName: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: 0,
-  },
-  metricStats: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    marginBottom: '16px',
-  },
-  statRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: '14px',
-    color: '#94a3b8',
-  },
-  metricProgress: {
-    marginBottom: '12px',
-  },
-  progressLabel: {
-    fontSize: '12px',
-    color: '#94a3b8',
-    marginBottom: '4px',
-  },
-  progressBarContainer: {
-    width: '100%',
-    height: '8px',
-    background: '#334155',
-    borderRadius: '4px',
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    borderRadius: '4px',
-    transition: 'width 0.3s',
-  },
-  metricStreak: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px',
-    background: '#fef2f2',
-    borderRadius: '6px',
-    marginBottom: '12px',
-    color: '#991b1b',
-    fontSize: '14px',
-  },
-  metricActions: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '12px',
-  },
-  metricBtnAdd: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '6px',
-    padding: '10px',
-    background: '#10b981',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  metricBtnView: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '6px',
-    padding: '10px',
-    background: '#3b82f6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  metricRecent: {
-    borderTop: '1px solid #334155',
-    paddingTop: '12px',
-  },
-  recentLabel: {
-    fontSize: '12px',
-    color: '#94a3b8',
-    marginBottom: '8px',
-  },
-  recentEntry: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '6px 0',
-    fontSize: '13px',
-    color: '#cbd5e1',
-  },
-  deleteMiniBtn: {
-    background: 'transparent',
-    border: 'none',
-    color: '#ef4444',
-    cursor: 'pointer',
-    fontSize: '20px',
-    padding: '0 8px',
-  },
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(0, 0, 0, 0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-  },
-  modalContent: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '32px',
-    maxWidth: '500px',
-    width: '90%',
-  },
-  modalForm: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    marginTop: '20px',
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  input: {
-    padding: '12px',
-    background: '#0f172a',
-    border: '1px solid #334155',
-    borderRadius: '6px',
-    color: '#e2e8f0',
-    fontSize: '14px',
-  },
-  modalActions: {
-    display: 'flex',
-    gap: '12px',
-  },
-  modalSaveBtn: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    padding: '12px',
-    background: '#10b981',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  modalCancelBtn: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    padding: '12px',
-    background: '#ef4444',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  profileCard: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '24px',
-    marginBottom: '24px',
-  },
-  profileHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    marginBottom: '24px',
-  },
-  editProfileBtn: {
-    marginLeft: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 16px',
-    background: '#3b82f6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  profileForm: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  profileActions: {
-    display: 'flex',
-    gap: '12px',
-  },
-  saveBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '12px 24px',
-    background: '#10b981',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  cancelBtn: {
-    padding: '12px 24px',
-    background: '#ef4444',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  profileLinks: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  profileLink: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '16px',
-    background: '#0f172a',
-    borderRadius: '8px',
-    textDecoration: 'none',
-    color: '#e2e8f0',
-    transition: 'background 0.3s',
-  },
-  emptyText: {
-    color: '#94a3b8',
-    textAlign: 'center' as const,
-    padding: '32px',
-  },
-  certificatesCard: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '24px',
-  },
-  certificatesHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    marginBottom: '24px',
-  },
-  addCertBtn: {
-    marginLeft: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 16px',
-    background: '#f59e0b',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  emptyState: {
-    textAlign: 'center' as const,
-    padding: '48px 24px',
-    color: '#94a3b8',
-  },
-  certificatesList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  certificateItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    padding: '16px',
-    background: '#0f172a',
-    borderRadius: '8px',
-  },
-  certIcon: {
-    fontSize: '32px',
-  },
-  certInfo: {
-    flex: 1,
-  },
-  certName: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#e2e8f0',
-  },
-  certIssuer: {
-    fontSize: '14px',
-    color: '#94a3b8',
-  },
-  certDate: {
-    fontSize: '12px',
-    color: '#64748b',
-  },
-  certActions: {
-    display: 'flex',
-    gap: '8px',
-  },
-  viewCertBtn: {
-    padding: '8px',
-    background: '#3b82f6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    textDecoration: 'none',
-  },
-  deleteCertBtn: {
-    padding: '8px',
-    background: '#ef4444',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  financeCardsRow: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '20px',
-    marginBottom: '32px',
-  },
-  balanceCard: {
-    background: '#1e293b',
-    padding: '24px',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    borderLeft: '4px solid #10b981',
-  },
-  balanceLabel: {
-    color: '#94a3b8',
-    fontSize: '14px',
-    marginBottom: '4px',
-  },
-  balanceAmount: {
-    fontSize: '32px',
-    fontWeight: 'bold',
-    color: '#10b981',
-  },
-  updateBalanceBtn: {
-    marginLeft: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 16px',
-    background: '#3b82f6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  monthlySummary: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '24px',
-    marginBottom: '24px',
-  },
-  summaryStats: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '20px',
-    marginTop: '16px',
-  },
-  summaryItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  categoryBreakdown: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '24px',
-    marginBottom: '24px',
-  },
-  categoryList: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-    gap: '12px',
-    marginTop: '16px',
-  },
-  categoryItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '12px',
-    background: '#0f172a',
-    borderRadius: '6px',
-  },
-  expensesCard: {
-    background: '#1e293b',
-    borderRadius: '12px',
-    padding: '24px',
-  },
-  expensesHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: '24px',
-  },
-  addExpenseBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 16px',
-    background: '#10b981',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  expensesList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-  expenseItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px',
-    background: '#0f172a',
-    borderRadius: '8px',
-  },
-  expenseInfo: {
-    flex: 1,
-  },
-  expenseDescription: {
-    fontSize: '16px',
-    fontWeight: '500',
-    color: '#e2e8f0',
-    marginBottom: '4px',
-  },
-  expenseMeta: {
-    display: 'flex',
-    gap: '12px',
-    fontSize: '14px',
-  },
-  expenseCategory: {
-    color: '#3b82f6',
-  },
-  expenseDate: {
-    color: '#94a3b8',
-  },
-  expenseActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  expenseAmount: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#ef4444',
-  },
-  deleteExpenseBtn: {
-    padding: '8px',
-    background: '#ef4444',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-  },
 };
 
 export default Growth;

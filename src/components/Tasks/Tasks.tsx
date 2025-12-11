@@ -142,9 +142,8 @@ const Tasks: React.FC<TasksProps> = ({ onBack }) => {
     const total = tasks.length;
     const completed = tasks.filter(t => t.completed).length;
     const active = total - completed;
-    const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    return { total, completed, active, completionRate };
+    return { total, completed, active };
   };
 
   const getPriorityColor = (priority: string): string => {
@@ -177,229 +176,226 @@ const Tasks: React.FC<TasksProps> = ({ onBack }) => {
   const filteredTasks = getFilteredTasks();
 
   return (
-    <div className="feature-container">
-      <button onClick={onBack} className="back-button">
-        ← Back to Home
-      </button>
+    <div className="tasks-container">
+      <div className="tasks-header">
+        <button onClick={onBack} className="back-button">
+          ← Back
+        </button>
+        <h2 className="tasks-title">Tasks</h2>
+        <button onClick={() => setShowAddForm(!showAddForm)} className="add-task-fab">
+          <Plus size={24} />
+        </button>
+      </div>
 
-      <div className="feature-content">
-        <div className="tasks-header">
-          <h2 className="feature-title">Tasks</h2>
-          <button onClick={() => setShowAddForm(!showAddForm)} className="add-task-btn">
-            <Plus size={24} />
-          </button>
+      {/* Stats */}
+      <div className="tasks-stats">
+        <div className="stat-card">
+          <div className="stat-value">{stats.total}</div>
+          <div className="stat-label">Total</div>
         </div>
-
-        {/* Stats */}
-        <div className="tasks-stats">
-          <div className="stat-card">
-            <div className="stat-value">{stats.total}</div>
-            <div className="stat-label">Total</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.active}</div>
-            <div className="stat-label">Active</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.completed}</div>
-            <div className="stat-label">Completed</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.completionRate}%</div>
-            <div className="stat-label">Progress</div>
-          </div>
+        <div className="stat-card">
+          <div className="stat-value">{stats.active}</div>
+          <div className="stat-label">Active</div>
         </div>
+        <div className="stat-card">
+          <div className="stat-value">{stats.completed}</div>
+          <div className="stat-label">Completed</div>
+        </div>
+      </div>
 
-        {/* Add Task Form */}
-        {showAddForm && (
-          <div className="add-task-form">
-            <h3>Create New Task</h3>
+      {/* Modal Add Task Form */}
+      {showAddForm && (
+        <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Create New Task</h3>
+              <button className="modal-close" onClick={() => setShowAddForm(false)}>×</button>
+            </div>
             
-            <div className="form-group">
-              <label>Task Title *</label>
-              <input
-                type="text"
-                value={newTask.title}
-                onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                placeholder="e.g., Buy groceries, Study for exam"
-                className="text-input"
-                autoFocus
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Description</label>
-              <textarea
-                value={newTask.description}
-                onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                placeholder="Add details about the task..."
-                className="textarea-input"
-                rows={3}
-              />
-            </div>
-
-            <div className="form-row">
+            <div className="modal-body">
               <div className="form-group">
-                <label>Priority</label>
-                <select
-                  value={newTask.priority}
-                  onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
-                  className="select-input"
-                >
-                  {priorities.map(p => (
-                    <option key={p.value} value={p.value}>{p.label}</option>
-                  ))}
-                </select>
+                <label>Task Title *</label>
+                <input
+                  type="text"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  placeholder="e.g., Buy groceries, Study for exam"
+                  className="text-input"
+                  autoFocus
+                />
               </div>
 
               <div className="form-group">
-                <label>Category</label>
-                <select
-                  value={newTask.category}
-                  onChange={(e) => setNewTask({ ...newTask, category: e.target.value })}
-                  className="select-input"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                <label>Description</label>
+                <textarea
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                  placeholder="Add details about the task..."
+                  className="textarea-input"
+                  rows={3}
+                />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Due Date (Optional)</label>
-              <input
-                type="date"
-                value={newTask.dueDate}
-                onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                className="date-input"
-              />
-            </div>
-
-            <div className="form-actions">
-              <button onClick={addTask} className="save-btn">Add Task</button>
-              <button onClick={() => setShowAddForm(false)} className="cancel-btn">Cancel</button>
-            </div>
-          </div>
-        )}
-
-        {/* Filters */}
-        <div className="filters-section">
-          <div className="filter-group">
-            <Filter size={18} />
-            <button
-              onClick={() => setFilter('all')}
-              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('active')}
-              className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
-            >
-              Active
-            </button>
-            <button
-              onClick={() => setFilter('completed')}
-              className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
-            >
-              Completed
-            </button>
-          </div>
-
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="category-filter-select"
-          >
-            <option value="all">All Categories</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="sort-select"
-          >
-            <option value="date">Sort by Date</option>
-            <option value="priority">Sort by Priority</option>
-          </select>
-        </div>
-
-        {/* Tasks List */}
-        <div className="tasks-list">
-          {filteredTasks.length === 0 && (
-            <div className="empty-state">
-              <CheckCircle size={64} color="#4b5563" />
-              <p>
-                {filter === 'completed' ? 'No completed tasks yet' : 
-                 filter === 'active' ? 'No active tasks' : 
-                 'No tasks yet'}
-              </p>
-              <small>Click + to create your first task</small>
-            </div>
-          )}
-
-          {filteredTasks.map(task => (
-            <div
-              key={task.id}
-              className={`task-card ${task.completed ? 'completed' : ''} priority-${task.priority}`}
-            >
-              <button
-                onClick={() => toggleTask(task.id)}
-                className="task-checkbox"
-              >
-                {task.completed ? (
-                  <CheckCircle size={24} color="#10b981" />
-                ) : (
-                  <Circle size={24} color="#6b7280" />
-                )}
-              </button>
-
-              <div className="task-content">
-                <div className="task-title">{task.title}</div>
-                {task.description && (
-                  <div className="task-description">{task.description}</div>
-                )}
-                <div className="task-meta">
-                  <span className="task-category">{task.category}</span>
-                  <span
-                    className="task-priority"
-                    style={{ backgroundColor: getPriorityColor(task.priority) }}
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Priority</label>
+                  <select
+                    value={newTask.priority}
+                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
+                    className="select-input"
                   >
-                    {task.priority}
-                  </span>
-                  {task.dueDate && (
-                    <span className={`task-due-date ${isOverdue(task.dueDate) && !task.completed ? 'overdue' : ''}`}>
-                      <Calendar size={14} />
-                      {formatDate(task.dueDate)}
-                      {isOverdue(task.dueDate) && !task.completed && ' ⚠️'}
-                    </span>
-                  )}
+                    {priorities.map(p => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Category</label>
+                  <select
+                    value={newTask.category}
+                    onChange={(e) => setNewTask({ ...newTask, category: e.target.value })}
+                    className="select-input"
+                  >
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="delete-task-btn"
-              >
-                <Trash2 size={20} />
-              </button>
+              <div className="form-group">
+                <label>Due Date (Optional)</label>
+                <input
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                  className="date-input"
+                />
+              </div>
+
+              <button onClick={addTask} className="submit-task-btn">Create Task</button>
             </div>
-          ))}
+          </div>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="filters-section">
+        <div className="filter-group">
+          <Filter size={18} />
+          <button
+            onClick={() => setFilter('all')}
+            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('active')}
+            className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setFilter('completed')}
+            className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
+          >
+            Completed
+          </button>
         </div>
 
-        {/* Clear Completed Button */}
-        {stats.completed > 0 && (
-          <div className="clear-completed-section">
-            <button onClick={clearCompleted} className="clear-completed-btn">
-              Clear {stats.completed} Completed Task{stats.completed > 1 ? 's' : ''}
-            </button>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="category-filter-select"
+        >
+          <option value="all">All Categories</option>
+          {categories.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as any)}
+          className="sort-select"
+        >
+          <option value="date">Sort by Date</option>
+          <option value="priority">Sort by Priority</option>
+        </select>
+      </div>
+
+      {/* Tasks List */}
+      <div className="tasks-list">
+        {filteredTasks.length === 0 && (
+          <div className="empty-state">
+            <CheckCircle size={64} color="#9ca3af" />
+            <p>
+              {filter === 'completed' ? 'No completed tasks yet' : 
+               filter === 'active' ? 'No active tasks' : 
+               'No tasks yet'}
+            </p>
+            <small>Click + to create your first task</small>
           </div>
         )}
+
+        {filteredTasks.map(task => (
+          <div
+            key={task.id}
+            className={`task-card ${task.completed ? 'completed' : ''} priority-${task.priority}`}
+          >
+            <button
+              onClick={() => toggleTask(task.id)}
+              className="task-checkbox"
+            >
+              {task.completed ? (
+                <CheckCircle size={24} color="#10b981" />
+              ) : (
+                <Circle size={24} color="#9ca3af" />
+              )}
+            </button>
+
+            <div className="task-content">
+              <div className="task-title">{task.title}</div>
+              {task.description && (
+                <div className="task-description">{task.description}</div>
+              )}
+              <div className="task-meta">
+                <span className="task-category">{task.category}</span>
+                <span
+                  className="task-priority"
+                  style={{ backgroundColor: getPriorityColor(task.priority) }}
+                >
+                  {task.priority}
+                </span>
+                {task.dueDate && (
+                  <span className={`task-due-date ${isOverdue(task.dueDate) && !task.completed ? 'overdue' : ''}`}>
+                    <Calendar size={14} />
+                    {formatDate(task.dueDate)}
+                    {isOverdue(task.dueDate) && !task.completed && ' ⚠️'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <button
+              onClick={() => deleteTask(task.id)}
+              className="delete-task-btn"
+            >
+              <Trash2 size={20} />
+            </button>
+          </div>
+        ))}
       </div>
+
+      {/* Clear Completed Button */}
+      {stats.completed > 0 && (
+        <div className="clear-completed-section">
+          <button onClick={clearCompleted} className="clear-completed-btn">
+            Clear {stats.completed} Completed Task{stats.completed > 1 ? 's' : ''}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-// Notes.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import './Notes.css';
 
@@ -11,6 +10,7 @@ interface Note {
   updatedAt: Date;
   isFavorite: boolean;
   color: string;
+  pages?: number;
 }
 
 interface NotesProps {
@@ -28,7 +28,8 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
       createdAt: new Date('2024-12-01'),
       updatedAt: new Date('2024-12-01'),
       isFavorite: true,
-      color: '#FFE4E1'
+      color: '#FFF5E6',
+      pages: 1
     },
     {
       id: '2',
@@ -38,7 +39,8 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
       createdAt: new Date('2024-12-05'),
       updatedAt: new Date('2024-12-05'),
       isFavorite: true,
-      color: '#E6E6FA'
+      color: '#E6F3FF',
+      pages: 1
     },
     {
       id: '3',
@@ -48,7 +50,8 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
       createdAt: new Date('2024-12-08'),
       updatedAt: new Date('2024-12-09'),
       isFavorite: false,
-      color: '#F0FFF0'
+      color: '#F0F7F0',
+      pages: 1
     },
     {
       id: '4',
@@ -58,17 +61,19 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
       createdAt: new Date('2024-12-03'),
       updatedAt: new Date('2024-12-04'),
       isFavorite: false,
-      color: '#F0F8FF'
+      color: '#F8F0FF',
+      pages: 1
     },
     {
       id: '5',
       title: 'Meeting Notes',
-      content: 'Team meeting:\n- Discussed new features\n- Assigned tasks\n- Set deadlines',
+      content: 'Team meeting:\n- Discussed new features\n- Assigned tasks\n- Set deadlines\n\nNext week agenda:\n1. Review progress\n2. Plan next sprint\n3. Update documentation\n\nAction items:\n• John: Complete API integration\n• Sarah: Design UI components\n• Mike: Write unit tests\n• Lisa: Prepare presentation',
       type: 'note',
       createdAt: new Date('2024-12-10'),
       updatedAt: new Date('2024-12-10'),
       isFavorite: false,
-      color: '#FFFACD'
+      color: '#FFF0F5',
+      pages: 2
     }
   ]);
 
@@ -80,22 +85,31 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
     title: '',
     content: '',
     type: 'note' as 'note' | 'idea',
-    color: '#FFFFFF'
+    color: '#FFF5E6',
+    pages: 1
   });
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const filteredNotes = notes.filter(note => 
     activeTab === 'notes' ? note.type === 'note' : note.type === 'idea'
   );
+
+  const calculatePages = (content: string): number => {
+    const words = content.trim().split(/\s+/).length;
+    const pages = Math.max(1, Math.ceil(words / 200));
+    return pages;
+  };
 
   const resetForm = () => {
     setCurrentNote({
       title: '',
       content: '',
       type: activeTab === 'notes' ? 'note' : 'idea',
-      color: '#FFFFFF'
+      color: '#FFF5E6',
+      pages: 1
     });
     setEditingNoteId(null);
     setIsEditing(false);
@@ -108,8 +122,9 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
       return;
     }
 
+    const pages = calculatePages(currentNote.content);
+
     if (isEditing && editingNoteId) {
-      // Update existing note
       setNotes(notes.map(note => 
         note.id === editingNoteId 
           ? {
@@ -117,12 +132,12 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
               title: currentNote.title || 'Untitled',
               content: currentNote.content,
               updatedAt: new Date(),
-              color: currentNote.color
+              color: currentNote.color,
+              pages
             }
           : note
       ));
     } else {
-      // Create new note
       const newNote: Note = {
         id: Date.now().toString(),
         title: currentNote.title || 'Untitled',
@@ -131,7 +146,8 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
         createdAt: new Date(),
         updatedAt: new Date(),
         isFavorite: false,
-        color: currentNote.color
+        color: currentNote.color,
+        pages
       };
       setNotes([newNote, ...notes]);
     }
@@ -145,7 +161,8 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
       title: note.title,
       content: note.content,
       type: note.type,
-      color: note.color
+      color: note.color,
+      pages: note.pages || 1
     });
     setEditingNoteId(note.id);
     setIsEditing(true);
@@ -176,247 +193,302 @@ const Notes: React.FC<NotesProps> = ({ onBack }) => {
   };
 
   const colorOptions = [
-    { name: 'White', value: '#FFFFFF' },
-    { name: 'Pink', value: '#FFE4E1' },
-    { name: 'Lavender', value: '#E6E6FA' },
-    { name: 'Mint', value: '#F0FFF0' },
-    { name: 'Blue', value: '#F0F8FF' },
-    { name: 'Lemon', value: '#FFFACD' },
-    { name: 'Peach', value: '#FFDAB9' },
-    { name: 'Gray', value: '#F5F5F5' }
+    { name: 'Cream', value: '#FFF5E6' },
+    { name: 'Blue', value: '#E6F3FF' },
+    { name: 'Green', value: '#F0F7F0' },
+    { name: 'Lavender', value: '#F8F0FF' },
+    { name: 'Pink', value: '#FFF0F5' },
+    { name: 'Mint', value: '#F0FFF4' },
+    { name: 'Peach', value: '#FFE8E0' },
+    { name: 'Yellow', value: '#FFFDE6' }
   ];
 
-  // Focus on title input when creating new note
   useEffect(() => {
     if (isCreating && titleRef.current) {
       titleRef.current.focus();
     }
   }, [isCreating]);
 
-  // Update note type when tab changes
   useEffect(() => {
     if (!isCreating) {
       resetForm();
     }
   }, [activeTab]);
 
+  const getNotePreview = (content: string, maxLines: number = 3) => {
+    const lines = content.split('\n').slice(0, maxLines);
+    return lines.join('\n');
+  };
+
   return (
     <div className="notes-container">
       {/* Header */}
-      <header className="notes-header">
-        <button className="back-button" onClick={onBack}>
-          ← Back
-        </button>
-        <h1>My Notes</h1>
-      </header>
+<header className="notes-header">
+  <div className="header-content">
+    <button className="back-button" onClick={onBack}>
+      ← Back
+    </button>
+    <div className="header-center">
+      <h1>My Notebook</h1>
+    </div>
+    <div className="header-right"></div> {/* Empty div for spacing */}
+  </div>
+</header>
 
-      {/* Tabs */}
-      <div className="tabs">
-        <button 
-          className={`tab ${activeTab === 'notes' ? 'active' : ''}`}
-          onClick={() => setActiveTab('notes')}
-        >
-          📝 Notes
-        </button>
-        <button 
-          className={`tab ${activeTab === 'ideas' ? 'active' : ''}`}
-          onClick={() => setActiveTab('ideas')}
-        >
-          💡 Ideas
-        </button>
+      {/* Tabs Side by Side */}
+      <div className="tabs-row">
+        <div className="tabs-container">
+          <button 
+            className={`tab ${activeTab === 'notes' ? 'active' : ''}`}
+            onClick={() => setActiveTab('notes')}
+          >
+            <span className="tab-text">Notes</span>
+          </button>
+          <button 
+            className={`tab ${activeTab === 'ideas' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ideas')}
+          >
+            <span className="tab-text">Ideas</span>
+          </button>
+        </div>
       </div>
 
-      {/* Content Area */}
-      <div className="notes-content">
-        {/* Empty State */}
-        {filteredNotes.length === 0 && !isCreating && (
-          <div className="empty-state">
-            <div className="empty-icon">
-              {activeTab === 'notes' ? '📝' : '💡'}
-            </div>
-            <h3>No {activeTab === 'notes' ? 'notes' : 'ideas'} yet</h3>
-            <p>
-              {activeTab === 'notes' 
-                ? 'Create your first note and add multiple pages!' 
-                : 'Capture your creative ideas with descriptions!'}
-            </p>
-            <button 
-              className="create-btn"
-              onClick={() => setIsCreating(true)}
-            >
-              + Create {activeTab === 'notes' ? 'Note' : 'Idea'}
-            </button>
-          </div>
-        )}
-
-        {/* Notes List */}
+      {/* Main Content */}
+      <main className="notes-main">
+        {/* Notes Grid */}
         {!isCreating && filteredNotes.length > 0 && (
-          <div className="notes-list">
+          <div className="notes-grid">
             {filteredNotes.map(note => (
               <div 
                 key={note.id} 
-                className="note-card"
+                className="note-book"
                 style={{ backgroundColor: note.color }}
               >
-                <div className="note-header">
-                  <div className="note-title-section">
-                    <h3>{note.title}</h3>
-                    <button 
-                      className={`favorite-btn ${note.isFavorite ? 'favorited' : ''}`}
-                      onClick={() => toggleFavorite(note.id)}
-                    >
-                      {note.isFavorite ? '★' : '☆'}
-                    </button>
+                <div className="book-cover">
+                  <div className="book-spine"></div>
+                  <div className="book-content">
+                    <div className="book-header">
+                      <div className="book-title-section">
+                        <h3 className="book-title">{note.title}</h3>
+                        <button 
+                          className={`favorite-btn ${note.isFavorite ? 'favorited' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(note.id);
+                          }}
+                          title={note.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          {note.isFavorite ? '★' : '☆'}
+                        </button>
+                      </div>
+                      <div className="book-meta">
+                        <span className="book-date">{formatDate(note.updatedAt)}</span>
+                        <span className="book-pages">{note.pages || 1} page{note.pages !== 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="book-preview">
+                      <div className="preview-content">
+                        {getNotePreview(note.content).split('\n').map((line, index) => (
+                          <p key={index} className="preview-line">{line}</p>
+                        ))}
+                        {note.content.split('\n').length > 3 && (
+                          <span className="preview-more">...</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="book-actions">
+                      <button 
+                        className="action-btn edit-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditNote(note);
+                        }}
+                      >
+                        <span className="action-text">Edit</span>
+                      </button>
+                      <button 
+                        className="action-btn delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteNote(note.id);
+                        }}
+                      >
+                        <span className="action-text">Delete</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="note-actions">
-                    <button 
-                      className="edit-btn"
-                      onClick={() => handleEditNote(note)}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      className="delete-btn"
-                      onClick={() => handleDeleteNote(note.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="note-content">
-                  {note.content.split('\n').map((line, index) => (
-                    <p key={index}>{line}</p>
-                  ))}
-                </div>
-                
-                <div className="note-footer">
-                  <span className="note-date">
-                    {formatDate(note.updatedAt)}
-                  </span>
-                  <span className="note-type">
-                    {note.type === 'note' ? '📝 Note' : '💡 Idea'}
-                  </span>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Create/Edit Form */}
-        {isCreating && (
-          <div className="create-form">
-            <div className="form-header">
-              <h3>
-                {isEditing ? 'Edit' : 'Create'} {activeTab === 'notes' ? 'Note' : 'Idea'}
-              </h3>
+        {/* Empty State */}
+        {filteredNotes.length === 0 && !isCreating && (
+          <div className="empty-state">
+            <div className="empty-book">
+              <div className="book-icon">📖</div>
+              <h3>No {activeTab === 'notes' ? 'notes' : 'ideas'} yet</h3>
+              <p>
+                {activeTab === 'notes' 
+                  ? 'Start your first notebook and add multiple pages!' 
+                  : 'Capture your creative ideas in your digital notebook!'}
+              </p>
               <button 
-                className="close-btn"
-                onClick={() => {
-                  setIsCreating(false);
-                  resetForm();
-                }}
+                className="create-first-btn"
+                onClick={() => setIsCreating(true)}
               >
-                ✕
-              </button>
-            </div>
-
-            <div className="form-group">
-              <input
-                ref={titleRef}
-                type="text"
-                className="title-input"
-                placeholder={`${activeTab === 'notes' ? 'Note' : 'Idea'} title...`}
-                value={currentNote.title}
-                onChange={(e) => setCurrentNote({...currentNote, title: e.target.value})}
-              />
-            </div>
-
-            <div className="form-group">
-              <textarea
-                ref={contentRef}
-                className="content-input"
-                placeholder={`Write your ${activeTab === 'notes' ? 'note content...' : 'idea description...'}`}
-                value={currentNote.content}
-                onChange={(e) => setCurrentNote({...currentNote, content: e.target.value})}
-                rows={8}
-              />
-              {activeTab === 'notes' && (
-                <div className="pages-info">
-                  <span className="pages-icon">📄</span>
-                  <span>Pages will be added automatically as you write more</span>
-                </div>
-              )}
-            </div>
-
-            <div className="color-picker">
-              <p className="color-label">Choose color:</p>
-              <div className="color-options">
-                {colorOptions.map(color => (
-                  <button
-                    key={color.value}
-                    className={`color-option ${currentNote.color === color.value ? 'selected' : ''}`}
-                    style={{ backgroundColor: color.value }}
-                    onClick={() => setCurrentNote({...currentNote, color: color.value})}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button 
-                className="cancel-btn"
-                onClick={() => {
-                  setIsCreating(false);
-                  resetForm();
-                }}
-              >
-                Cancel
-              </button>
-              <button 
-                className="save-btn"
-                onClick={handleSaveNote}
-                disabled={!currentNote.title.trim() && !currentNote.content.trim()}
-              >
-                {isEditing ? 'Update' : 'Save'}
+                + Create {activeTab === 'notes' ? 'Note' : 'Idea'}
               </button>
             </div>
           </div>
         )}
-      </div>
 
-      {/* Floating Action Button */}
+        {/* Create/Edit Form */}
+        {isCreating && (
+          <div className="form-overlay">
+            <div 
+              className="create-form book-form"
+              ref={formRef}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="form-book-cover">
+                <div className="form-spine"></div>
+                <div className="form-content">
+                  <div className="form-header">
+                    <div className="form-title">
+                      <h3>
+                        {isEditing ? 'Edit' : 'Create New'} {activeTab === 'notes' ? 'Note' : 'Idea'}
+                      </h3>
+                    </div>
+                    <button 
+                      className="form-close-btn"
+                      onClick={() => {
+                        setIsCreating(false);
+                        resetForm();
+                      }}
+                      title="Close"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="form-body">
+                    <div className="form-group">
+                      <div className="input-label">Title</div>
+                      <input
+                        ref={titleRef}
+                        type="text"
+                        className="title-input"
+                        placeholder={`Enter ${activeTab === 'notes' ? 'note' : 'idea'} title...`}
+                        value={currentNote.title}
+                        onChange={(e) => setCurrentNote({...currentNote, title: e.target.value})}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <div className="input-label">Content</div>
+                      <textarea
+                        ref={contentRef}
+                        className="content-input"
+                        placeholder={`Write your ${activeTab === 'notes' ? 'note content...' : 'idea description...'}`}
+                        value={currentNote.content}
+                        onChange={(e) => {
+                          const newContent = e.target.value;
+                          setCurrentNote({
+                            ...currentNote, 
+                            content: newContent,
+                            pages: calculatePages(newContent)
+                          });
+                        }}
+                        rows={10}
+                      />
+                      <div className="pages-counter">
+                        <span className="pages-text">
+                          Pages: {calculatePages(currentNote.content)} • 
+                          Words: {currentNote.content.trim().split(/\s+/).filter(w => w.length > 0).length}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <div className="input-label">Cover Color</div>
+                      <div className="color-picker-grid">
+                        {colorOptions.map(color => (
+                          <button
+                            key={color.value}
+                            className={`color-option ${currentNote.color === color.value ? 'selected' : ''}`}
+                            style={{ backgroundColor: color.value }}
+                            onClick={() => setCurrentNote({...currentNote, color: color.value})}
+                            title={color.name}
+                          >
+                            {currentNote.color === color.value && (
+                              <span className="color-check">✓</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-footer">
+                    <div className="form-actions">
+                      <button 
+                        className="cancel-btn"
+                        onClick={() => {
+                          setIsCreating(false);
+                          resetForm();
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        className="save-btn"
+                        onClick={handleSaveNote}
+                        disabled={!currentNote.title.trim() && !currentNote.content.trim()}
+                      >
+                        {isEditing ? 'Update' : 'Save'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Add Button */}
       {!isCreating && (
         <button 
-          className="fab"
+          className="add-button"
           onClick={() => setIsCreating(true)}
+          title={`Add ${activeTab === 'notes' ? 'Note' : 'Idea'}`}
         >
           +
         </button>
       )}
 
-      {/* Quick Stats */}
-      <div className="stats-bar">
-        <div className="stat">
-          <span className="stat-number">
-            {notes.filter(n => n.type === 'note').length}
-          </span>
-          <span className="stat-label">Notes</span>
+      {/* Simplified Stats Footer */}
+      <footer className="stats-footer">
+        <div className="stats-container">
+          <div className="stat-item">
+            <div className="stat-info">
+              <span className="stat-number">{notes.filter(n => n.type === 'note').length}</span>
+              <span className="stat-label">NOTES</span>
+            </div>
+          </div>
+          <div className="stat-divider"></div>
+          <div className="stat-item">
+            <div className="stat-info">
+              <span className="stat-number">{notes.filter(n => n.type === 'idea').length}</span>
+              <span className="stat-label">IDEAS</span>
+            </div>
+          </div>
         </div>
-        <div className="stat">
-          <span className="stat-number">
-            {notes.filter(n => n.type === 'idea').length}
-          </span>
-          <span className="stat-label">Ideas</span>
-        </div>
-        <div className="stat">
-          <span className="stat-number">
-            {notes.filter(n => n.isFavorite).length}
-          </span>
-          <span className="stat-label">Favorites</span>
-        </div>
-      </div>
+      </footer>
     </div>
   );
 };

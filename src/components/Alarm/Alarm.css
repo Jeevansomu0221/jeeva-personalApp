@@ -1,161 +1,100 @@
 .alarm-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
   color: white;
-  padding: 24px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 20px;
+  padding-top: max(20px, env(safe-area-inset-top, 20px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
 }
 
-.back-button {
-  background: rgba(255, 255, 255, 0.05);
-  color: #b0b0b0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 20px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 15px;
-  margin-bottom: 32px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.back-button:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: white;
-}
-
-.alarm-content {
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-/* Current Time Display */
-.time-display {
-  text-align: center;
-  margin-bottom: 40px;
-  padding: 32px 24px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-}
-
-.current-time {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
-}
-
-.current-date {
-  font-size: 1.125rem;
-  color: #888;
-  font-weight: 400;
-}
-
-/* Alarm List Section */
-.alarm-list-section {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-}
-
-.section-header {
+/* Header */
+.alarm-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
-  color: white;
-}
-
-.header-actions {
+.back-button {
+  background: transparent;
+  border: none;
+  color: #007AFF;
   display: flex;
-  gap: 12px;
   align-items: center;
-}
-
-.power-toggle-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #FF3B30;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  transition: opacity 0.2s;
+  min-height: 44px;
+  min-width: 44px;
 }
 
-.power-toggle-btn:hover {
-  background: rgba(255, 59, 48, 0.1);
-  border-color: rgba(255, 59, 48, 0.2);
-  transform: scale(1.05);
+.back-button:active {
+  opacity: 0.7;
 }
 
-.add-alarm-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #007AFF;
+.menu-button {
+  background: transparent;
   border: none;
   color: white;
-  cursor: pointer;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.2s;
 }
 
-.add-alarm-btn:hover {
-  background: #0056CC;
-  transform: scale(1.05);
+.menu-button:active {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Empty State */
-.empty-state {
+/* Next Alarm Info */
+.next-alarm-info {
   text-align: center;
-  padding: 48px 24px;
-  color: #666;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.empty-state svg {
-  color: #444;
+.next-alarm-label {
+  font-size: 14px;
+  color: #8E8E93;
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
-.empty-state p {
-  margin-top: 16px;
-  font-size: 1.125rem;
-  color: #b0b0b0;
-  margin-bottom: 4px;
+.next-alarm-time {
+  font-size: 36px;
+  font-weight: 700;
+  color: white;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -1px;
 }
 
-.empty-state small {
-  font-size: 0.875rem;
-  color: #666;
+/* Alarm List Section */
+.alarm-content {
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-/* Alarm List */
-.alarm-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.alarm-list-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
 
 .alarm-item {
@@ -163,546 +102,344 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  background: transparent;
+  transition: background-color 0.2s;
 }
 
-.alarm-item.enabled {
-  background: rgba(52, 199, 89, 0.05);
-  border-color: rgba(52, 199, 89, 0.1);
-}
-
-.alarm-item.disabled {
-  opacity: 0.5;
-}
-
-.alarm-item.enabled:hover {
-  background: rgba(52, 199, 89, 0.08);
-  border-color: rgba(52, 199, 89, 0.2);
-}
-
-.alarm-item.disabled:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+.alarm-item:active {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .alarm-item-left {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
   flex: 1;
 }
 
-.alarm-time-display {
+.alarm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  background: #5856D6;
+  flex-shrink: 0;
 }
 
-.alarm-time {
-  font-size: 1.75rem;
-  font-weight: 600;
+.alarm-icon svg {
   color: white;
 }
 
-.time-left {
-  font-size: 0.875rem;
-  color: #34C759;
-  background: rgba(52, 199, 89, 0.1);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: 500;
-}
-
-.alarm-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.alarm-details {
+  flex: 1;
 }
 
 .alarm-label {
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  color: #b0b0b0;
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.alarm-time {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+.alarm-schedule {
+  font-size: 14px;
+  color: #8E8E93;
   font-weight: 500;
-}
-
-.alarm-repeat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #888;
-}
-
-.repeat-tag {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  color: #b0b0b0;
 }
 
 .alarm-item-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-/* Toggle Switch */
 .alarm-toggle-switch {
   position: relative;
-  width: 52px;
-  height: 28px;
-  background: rgba(255, 255, 255, 0.1);
+  width: 51px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .alarm-toggle-switch.on {
   background: #34C759;
 }
 
-.alarm-toggle-switch.off {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .toggle-slider {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 24px;
-  height: 24px;
+  width: 27px;
+  height: 27px;
   background: white;
   border-radius: 50%;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .alarm-toggle-switch.on .toggle-slider {
-  transform: translateX(24px);
-}
-
-.alarm-toggle-switch.off .toggle-slider {
-  transform: translateX(0);
+  transform: translateX(20px);
 }
 
 .delete-alarm-btn {
-  background: rgba(255, 59, 48, 0.1);
+  background: transparent;
   border: none;
   color: #FF3B30;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  cursor: pointer;
+  font-size: 24px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.2s;
   opacity: 0.7;
 }
 
-.delete-alarm-btn:hover {
-  background: rgba(255, 59, 48, 0.2);
+.delete-alarm-btn:active {
+  background-color: rgba(255, 59, 48, 0.1);
   opacity: 1;
 }
 
-/* Add Alarm Form */
-.add-alarm-form {
-  margin-top: 24px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  animation: slideUp 0.3s ease;
+.alarm-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 20px;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Add Alarm Section */
+.add-alarm-section {
+  margin-top: 30px;
+  text-align: center;
 }
 
-.form-header {
+.add-alarm-btn {
+  background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
+  border: none;
+  border-radius: 16px;
+  color: white;
+  padding: 18px 30px;
+  font-size: 18px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-height: 60px;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+}
+
+.add-alarm-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+/* Add Alarm Modal */
+.add-alarm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.modal-content {
+  position: relative;
+  background: #1C1C1E;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.modal-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
 }
 
-.form-header h3 {
+.modal-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 600;
   color: white;
 }
 
-.close-form-btn {
-  background: none;
+.modal-header button {
+  background: transparent;
   border: none;
-  color: #888;
-  font-size: 1.5rem;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
+  color: #8E8E93;
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.2s;
 }
 
-.close-form-btn:hover {
+.modal-header button:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-actions {
+  padding: 20px;
+}
+
+.quick-add-btn {
+  width: 100%;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
   color: white;
-}
-
-.form-section {
-  margin-bottom: 24px;
-}
-
-.section-label {
-  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
   margin-bottom: 12px;
-  font-size: 0.875rem;
-  color: #b0b0b0;
-  font-weight: 500;
+  text-align: left;
 }
 
-/* Mode Selector */
-.mode-selector {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+.quick-add-btn:last-child {
+  margin-bottom: 0;
 }
 
-.mode-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1.5px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  color: #888;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
+.quick-add-btn:active {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(0.98);
 }
 
-.mode-btn:hover {
-  border-color: rgba(var(--mode-color, 255, 255, 255), 0.2);
-  color: var(--mode-color, #888);
-  transform: translateY(-2px);
-}
-
-.mode-btn.active {
-  background: rgba(var(--mode-color, 255, 255, 255), 0.1);
-  border-color: var(--mode-color, #007AFF);
-  color: var(--mode-color, #007AFF);
-}
-
-.mode-btn svg {
-  color: inherit;
-}
-
-/* Time Selector */
-.time-selector {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: center;
-}
-
-.time-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-
-.time-input {
-  width: 100%;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white !important;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  transition: border-color 0.3s ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.time-input:focus {
-  outline: none;
-  border-color: #007AFF;
-}
-
-/* Fix for select option visibility */
-.time-input option {
-  background: #1a1a1a;
-  color: white;
-  padding: 10px;
-}
-
-.time-label {
-  margin-top: 8px;
-  font-size: 0.75rem;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.ampm-input {
-  flex: 0.8;
-}
-
-.time-separator {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #666;
-  padding-bottom: 20px;
-}
-
-/* Label Input */
-.label-input-wrapper {
-  width: 100%;
-}
-
-.label-input {
-  width: 100%;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.label-input:focus {
-  outline: none;
-  border-color: #007AFF;
-}
-
-.label-input::placeholder {
-  color: #666;
-}
-
-/* Days Selector */
-.days-selector {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.day-btn {
-  flex: 1;
-  min-width: 60px;
-  padding: 12px 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: #888;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.day-btn:hover {
-  border-color: rgba(0, 122, 255, 0.3);
+.quick-add-btn svg {
+  flex-shrink: 0;
   color: #007AFF;
 }
 
-.day-btn.active {
-  background: rgba(0, 122, 255, 0.1);
-  border-color: #007AFF;
-  color: #007AFF;
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.repeat-note {
-  margin-top: 12px;
-  font-size: 0.75rem;
-  color: #666;
-  text-align: center;
-}
-
-/* Sound Selector */
-.sound-selector {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  transition: border-color 0.3s ease;
-}
-
-.sound-selector:focus-within {
-  border-color: #007AFF;
-}
-
-.sound-selector svg {
-  color: #888;
-}
-
-.sound-input {
-  flex: 1;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.sound-input:focus {
-  outline: none;
-}
-
-.sound-input option {
-  background: #1a1a1a;
-  color: white;
-  padding: 10px;
-}
-
-/* Form Actions */
-.form-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 32px;
-}
-
-.save-btn,
 .cancel-btn {
-  flex: 1;
+  width: 100%;
   padding: 16px;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  color: white;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
 }
 
-.save-btn {
-  background: #007AFF;
-  color: white;
-}
-
-.save-btn:hover {
-  background: #0056CC;
-  transform: translateY(-2px);
-}
-
-.cancel-btn {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-}
-
-.cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+.cancel-btn:active {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive Design */
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .alarm-container {
     padding: 16px;
   }
 
-  .current-time {
-    font-size: 2.75rem;
-  }
-
-  .current-date {
-    font-size: 1rem;
+  .next-alarm-time {
+    font-size: 32px;
   }
 
   .alarm-time {
-    font-size: 1.5rem;
+    font-size: 26px;
   }
 
-  .mode-selector {
-    grid-template-columns: repeat(2, 1fr);
+  .add-alarm-btn {
+    padding: 16px 24px;
+    font-size: 16px;
+    min-height: 56px;
   }
 
-  .time-selector {
-    flex-wrap: wrap;
-  }
-
-  .time-input-wrapper {
-    min-width: calc(33.33% - 8px);
-  }
-
-  .days-selector {
-    gap: 6px;
-  }
-
-  .day-btn {
-    min-width: calc(14.28% - 6px);
-    padding: 10px 4px;
-    font-size: 0.75rem;
+  .alarm-icon {
+    width: 40px;
+    height: 40px;
   }
 }
 
-@media (max-width: 480px) {
-  .current-time {
-    font-size: 2.25rem;
+@media (max-width: 375px) {
+  .alarm-label {
+    font-size: 16px;
   }
 
-  .alarm-list-section,
-  .add-alarm-form {
-    padding: 20px 16px;
+  .alarm-time {
+    font-size: 24px;
   }
 
-  .alarm-time-display {
-    flex-direction: column;
-    gap: 8px;
+  .alarm-schedule {
+    font-size: 13px;
   }
 
-  .alarm-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .quick-add-btn {
+    padding: 16px;
+    font-size: 15px;
   }
+}
 
-  .mode-selector {
-    grid-template-columns: 1fr;
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .back-button span,
+  .add-alarm-btn span,
+  .quick-add-btn span {
+    -webkit-tap-highlight-color: transparent;
   }
-
-  .form-actions {
-    flex-direction: column;
+  
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
   }
-
-  .alarm-item-right {
-    flex-direction: column;
-    gap: 8px;
+  
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }

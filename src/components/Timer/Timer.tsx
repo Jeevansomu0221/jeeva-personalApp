@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Clock, Trophy, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, Plus, Trophy, X, Trash2, Clock } from 'lucide-react';
 import './Timer.css';
 
 interface TimerProps {
@@ -12,6 +12,7 @@ interface Challenge {
   category: string;
   icon: string;
   color: string;
+  goal: 'higher' | 'lower'; // higher = longer is better, lower = faster is better
 }
 
 interface Record {
@@ -22,31 +23,15 @@ interface Record {
 
 const Timer: React.FC<TimerProps> = ({ onBack }) => {
   const initialChallenges: Challenge[] = [
-    // Breath Holding
-    { id: 'breath-hold', name: 'Breath Hold', category: 'Breathing', icon: '🫁', color: '#0ea5e9' },
+    // Breath Holding - Higher is better
+    { id: 'breath-hold', name: 'Breathing', category: 'Breath Hold', icon: '🫁', color: '#0ea5e9', goal: 'lower' },
     
-    // Running
-    { id: 'run-100m', name: '100m Sprint', category: 'Running', icon: '🏃', color: '#ea580c' },
-    { id: 'run-200m', name: '200m Sprint', category: 'Running', icon: '🏃‍♂️', color: '#ea580c' },
-    { id: 'run-400m', name: '400m Run', category: 'Running', icon: '🏃‍♀️', color: '#ea580c' },
-    { id: 'run-1km', name: '1KM Run', category: 'Running', icon: '🏃', color: '#dc2626' },
-    { id: 'run-5km', name: '5KM Run', category: 'Running', icon: '🏃‍♂️', color: '#dc2626' },
+    // Running - Lower is better
+    { id: 'run-100m', name: '100m Sprint', category: 'Running', icon: '🏃', color: '#ea580c', goal: 'lower' },
     
-    // Fitness Challenges
-    { id: 'plank', name: 'Plank Hold', category: 'Fitness', icon: '💪', color: '#16a34a' },
-    { id: 'wall-sit', name: 'Wall Sit', category: 'Fitness', icon: '🧘', color: '#16a34a' },
-    { id: 'push-ups', name: 'Push-ups (1 min)', category: 'Fitness', icon: '🤸', color: '#8b5cf6' },
-    { id: 'sit-ups', name: 'Sit-ups (1 min)', category: 'Fitness', icon: '🤸‍♀️', color: '#8b5cf6' },
-    { id: 'jumping-jacks', name: 'Jumping Jacks (1 min)', category: 'Fitness', icon: '🤾', color: '#8b5cf6' },
-    { id: 'burpees', name: 'Burpees (1 min)', category: 'Fitness', icon: '🤾‍♂️', color: '#8b5cf6' },
-    
-    // Swimming
-    { id: 'swim-50m', name: '50m Swim', category: 'Swimming', icon: '🏊', color: '#06b6d4' },
-    { id: 'swim-100m', name: '100m Swim', category: 'Swimming', icon: '🏊‍♂️', color: '#06b6d4' },
-    
-    // Other
-    { id: 'meditation', name: 'Meditation', category: 'Mindfulness', icon: '🧘‍♂️', color: '#a855f7' },
-    { id: 'reading', name: 'Reading Session', category: 'Learning', icon: '📚', color: '#6366f1' },
+    // More examples
+    { id: 'plank', name: 'Plank Hold', category: 'Fitness', icon: '💪', color: '#16a34a', goal: 'higher' },
+    { id: 'meditation', name: 'Meditation', category: 'Mindfulness', icon: '🧘‍♂️', color: '#a855f7', goal: 'higher' },
   ];
 
   const [challenges, setChallenges] = useState<Challenge[]>(initialChallenges);
@@ -54,29 +39,26 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [records, setRecords] = useState<Record[]>([]);
-  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [showCustomForm, setShowCustomForm] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customEmoji, setCustomEmoji] = useState('⚡');
-  const [showDelete, setShowDelete] = useState<string | null>(null);
+  const [customGoal, setCustomGoal] = useState<'higher' | 'lower'>('higher');
 
-  const emojiList = ['⚡', '🚴', '🏋️', '🧘‍♀️', '🏊‍♀️', '🏃', '🚲', '🧗', '🤸', '🎯', '🌟', '💪', '🔥', '⭐', '🏆'];
+  const emojiList = ['⚡', '🚴', '🏋️', '🧘‍♀️', '🏊‍♀️', '🏃', '🚲', '🧗', '🤸', '🎯', '🌟', '💪', '🔥', '⭐', '🏆', '🫁', '🧠', '❤️', '🦵', '👁️'];
 
   // Load challenges and records from localStorage
   useEffect(() => {
-    const savedChallenges = localStorage.getItem('jeeva-timer-challenges');
-    const savedRecords = localStorage.getItem('jeeva-timer-records');
+    const savedChallenges = localStorage.getItem('timer-challenges');
+    const savedRecords = localStorage.getItem('timer-records');
     
     if (savedChallenges) {
       try {
         const parsed = JSON.parse(savedChallenges);
-        // Merge with initial challenges, avoiding duplicates
-        const allChallenges = [...initialChallenges];
-        parsed.forEach((challenge: Challenge) => {
-          if (!allChallenges.some(c => c.id === challenge.id)) {
-            allChallenges.push(challenge);
-          }
-        });
-        setChallenges(allChallenges);
+        // Only use saved custom challenges, not the entire parsed array
+        const savedCustomChallenges = parsed.filter((challenge: Challenge) => 
+          challenge.id.startsWith('custom-')
+        );
+        setChallenges([...initialChallenges, ...savedCustomChallenges]);
       } catch (error) {
         console.error('Error parsing saved challenges:', error);
       }
@@ -92,15 +74,15 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
     }
   }, []);
 
-  // Save challenges and records to localStorage
+  // Save custom challenges and records to localStorage
   useEffect(() => {
     const customChallenges = challenges.filter(c => c.id.startsWith('custom-'));
     if (customChallenges.length > 0) {
-      localStorage.setItem('jeeva-timer-challenges', JSON.stringify(customChallenges));
+      localStorage.setItem('timer-challenges', JSON.stringify(customChallenges));
     }
     
     if (records.length > 0) {
-      localStorage.setItem('jeeva-timer-records', JSON.stringify(records));
+      localStorage.setItem('timer-records', JSON.stringify(records));
     }
   }, [challenges, records]);
 
@@ -140,12 +122,12 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
     setRecords(updatedRecords);
     
     const bestTime = getBestTime(selectedChallenge.id);
-    const isNewRecord = !bestTime || time < bestTime;
+    const isNewRecord = isBetterTime(time, bestTime, selectedChallenge.goal);
 
     if (isNewRecord) {
       alert(`🏆 NEW RECORD!\n${selectedChallenge.name}\nTime: ${formatTime(time)}`);
     } else {
-      alert(`✅ Completed!\n${selectedChallenge.name}\nTime: ${formatTime(time)}\nBest: ${formatTime(bestTime)}`);
+      alert(`✅ Completed!\n${selectedChallenge.name}\nTime: ${formatTime(time)}\nBest: ${formatTime(bestTime || 0)}`);
     }
 
     resetTimer();
@@ -168,45 +150,64 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
       name: customName,
       category: 'Custom',
       icon: customEmoji,
-      color: '#6366f1'
+      color: '#6366f1',
+      goal: customGoal
     };
 
     setChallenges(prev => [...prev, customChallenge]);
-    startTimer(customChallenge);
-    setShowCustomInput(false);
+    setShowCustomForm(false);
     setCustomName('');
     setCustomEmoji('⚡');
+    setCustomGoal('higher');
+    
+    // Auto-start the custom challenge
+    setTimeout(() => startTimer(customChallenge), 100);
   };
 
-  const deleteChallenge = (challengeId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const deleteChallenge = (challengeId: string) => {
     if (window.confirm('Are you sure you want to delete this challenge?')) {
-      setChallenges(prev => prev.filter(c => c.id !== challengeId));
-      setRecords(prev => prev.filter(r => r.challengeId !== challengeId));
+      setChallenges(challenges.filter(c => c.id !== challengeId));
+      setRecords(records.filter(r => r.challengeId !== challengeId));
     }
-    setShowDelete(null);
   };
 
   const formatTime = (milliseconds: number): string => {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    const ms = Math.floor((milliseconds % 1000) / 10);
-
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
-    } else if (minutes > 0) {
-      return `${minutes}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+    const totalSeconds = milliseconds / 1000;
+    
+    if (totalSeconds >= 3600) {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = Math.floor(totalSeconds % 60);
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } else if (totalSeconds >= 60) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = Math.floor(totalSeconds % 60);
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     } else {
-      return `${seconds}.${ms.toString().padStart(2, '0')}s`;
+      return `${totalSeconds.toFixed(2)}s`;
     }
   };
 
   const getBestTime = (challengeId: string): number | null => {
     const challengeRecords = records.filter(r => r.challengeId === challengeId);
     if (challengeRecords.length === 0) return null;
-    return Math.min(...challengeRecords.map(r => r.time));
+    
+    const challenge = challenges.find(c => c.id === challengeId);
+    if (!challenge) return null;
+
+    if (challenge.goal === 'higher') {
+      // For breathing/plank: Higher time is better (longer duration)
+      return Math.max(...challengeRecords.map(r => r.time));
+    } else {
+      // For running: Lower time is better (faster time)
+      return Math.min(...challengeRecords.map(r => r.time));
+    }
+  };
+
+  const isBetterTime = (current: number, best: number | null, goal: 'higher' | 'lower'): boolean => {
+    if (best === null) return true;
+    if (goal === 'higher') return current > best; // Current is better if it's higher (longer)
+    return current < best; // Current is better if it's lower (faster)
   };
 
   const getRecentRecords = (challengeId: string, limit: number = 3): Record[] => {
@@ -215,203 +216,228 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
       .slice(0, limit);
   };
 
-  const deleteRecord = (index: number) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
-      setRecords(records.filter((_, i) => i !== index));
+  // Sample records for initial display
+  useEffect(() => {
+    if (records.length === 0) {
+      // Add some sample records
+      const sampleRecords: Record[] = [
+        // Breathing records - higher is better (times in milliseconds)
+        { challengeId: 'breath-hold', time: 25820, date: new Date(Date.now() - 86400000) }, // 25.82s
+        { challengeId: 'breath-hold', time: 31690, date: new Date(Date.now() - 172800000) }, // 31.69s (BEST - higher)
+        { challengeId: 'breath-hold', time: 25830, date: new Date(Date.now() - 259200000) }, // 25.83s
+        
+        // Running records - lower is better
+        { challengeId: 'run-100m', time: 2000, date: new Date(Date.now() - 86400000) }, // 2.00s (BEST - lower)
+        { challengeId: 'run-100m', time: 2080, date: new Date(Date.now() - 172800000) }, // 2.08s
+      ];
+      setRecords(sampleRecords);
     }
-  };
+  }, []);
 
   return (
     <div className="timer-container">
-      <button onClick={onBack} className="back-button-timer">
-        ← Back to Home
-      </button>
+      {/* Header */}
+      <div className="timer-header">
+        <button onClick={onBack} className="back-button-timer">
+          <ChevronLeft size={24} />
+          <span>Back to Home</span>
+        </button>
+      </div>
 
-      <div className="timer-content">
-        {/* Active Timer View */}
-        {selectedChallenge ? (
-          <div className="active-timer-section">
-            <div className="timer-challenge-info">
-              <span className="challenge-icon" style={{ fontSize: '3rem' }}>
-                {selectedChallenge.icon}
-              </span>
-              <h3 style={{ color: selectedChallenge.color }}>{selectedChallenge.name}</h3>
-              <span className="challenge-category">{selectedChallenge.category}</span>
+      {/* Active Timer View */}
+      {selectedChallenge ? (
+        <div className="active-timer-view">
+          <div className="timer-challenge-header">
+            <div className="challenge-icon-large">{selectedChallenge.icon}</div>
+            <div>
+              <h2 className="challenge-title">{selectedChallenge.name}</h2>
+              <div className="challenge-category">{selectedChallenge.category}</div>
             </div>
-
-            <div className="timer-display">
-              <div className="timer-time">{formatTime(time)}</div>
-            </div>
-
-            <div className="timer-controls">
-              <button 
-                onClick={toggleTimer} 
-                className={`timer-control-btn ${isRunning ? 'pause' : 'play'}`}
-              >
-                {isRunning ? <Pause size={32} /> : <Play size={32} />}
-                <span>{isRunning ? 'Pause' : 'Resume'}</span>
-              </button>
-
-              <button 
-                onClick={stopAndSave} 
-                className="timer-control-btn stop"
-                disabled={time === 0}
-              >
-                <Clock size={32} />
-                <span>Stop & Save</span>
-              </button>
-
-              <button 
-                onClick={resetTimer} 
-                className="timer-control-btn reset"
-              >
-                <RotateCcw size={28} />
-                <span>Cancel</span>
-              </button>
-            </div>
-
-            {/* Best Time Display */}
-            {getBestTime(selectedChallenge.id) && (
-              <div className="best-time-display">
-                <Trophy size={24} color="#fbbf24" />
-                <span>Best Time: {formatTime(getBestTime(selectedChallenge.id)!)}</span>
-              </div>
-            )}
           </div>
-        ) : (
-          <>
-            {/* Custom Challenge Creation */}
-            {!showCustomInput ? (
-              <div className="custom-challenge-section">
-                <button onClick={() => setShowCustomInput(true)} className="custom-challenge-btn">
-                  <Plus size={20} />
-                  Create Custom Challenge
+
+          <div className="timer-display">
+            <div className="timer-time">{formatTime(time)}</div>
+            <div className="timer-status">
+              {isRunning ? 'Running...' : 'Paused'}
+            </div>
+          </div>
+
+          <div className="timer-controls">
+            <button 
+              onClick={toggleTimer} 
+              className={`control-btn ${isRunning ? 'pause-btn' : 'resume-btn'}`}
+            >
+              {isRunning ? 'Pause' : 'Resume'}
+            </button>
+            
+            <button 
+              onClick={stopAndSave} 
+              className="control-btn save-btn"
+              disabled={time === 0}
+            >
+              Stop & Save
+            </button>
+          </div>
+
+          {/* Best Time Display */}
+          {getBestTime(selectedChallenge.id) && (
+            <div className="best-time-section">
+              <Trophy size={20} />
+              <span>Best: {formatTime(getBestTime(selectedChallenge.id)!)}</span>
+              <span className="goal-badge">
+                {selectedChallenge.goal === 'higher' ? '↑ Higher is better' : '↓ Lower is better'}
+              </span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="challenges-view">
+          {/* Challenges Grid */}
+          <div className="challenges-grid">
+            {challenges.map(challenge => {
+              const bestTime = getBestTime(challenge.id);
+              const recentRecords = getRecentRecords(challenge.id, 3);
+              
+              return (
+                <div
+                  key={challenge.id}
+                  onClick={() => startTimer(challenge)}
+                  className="challenge-card"
+                  style={{ borderLeft: `4px solid ${challenge.color}` }}
+                >
+                  <div className="challenge-header">
+                    <div className="challenge-icon">{challenge.icon}</div>
+                    <div className="challenge-info">
+                      <h3>{challenge.name}</h3>
+                      <div className="challenge-category-badge">{challenge.category}</div>
+                    </div>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteChallenge(challenge.id);
+                      }}
+                      className="delete-challenge-btn"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  {bestTime ? (
+                    <div className="challenge-best">
+                      <div className="best-time">
+                        <Trophy size={14} />
+                        <span>{formatTime(bestTime)}</span>
+                      </div>
+                      <div className={`goal-indicator ${challenge.goal}`}>
+                        {challenge.goal === 'higher' ? '↑' : '↓'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="challenge-no-record">No record yet</div>
+                  )}
+
+                  {recentRecords.length > 0 && (
+                    <div className="recent-times">
+                      {recentRecords.map((record, idx) => (
+                        <div key={idx} className="recent-time">
+                          <Clock size={12} />
+                          <span>{formatTime(record.time)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Custom Challenge Modal */}
+      {showCustomForm && (
+        <div className="custom-modal">
+          <div className="modal-overlay" onClick={() => setShowCustomForm(false)} />
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Create Custom Challenge</h3>
+              <button onClick={() => setShowCustomForm(false)}>
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="form-group">
+              <label>Challenge Name</label>
+              <input
+                type="text"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="e.g., Wall Sit, 5K Run"
+                className="form-input"
+                autoFocus
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Emoji</label>
+              <div className="emoji-selector">
+                {emojiList.map(emoji => (
+                  <button
+                    key={emoji}
+                    onClick={() => setCustomEmoji(emoji)}
+                    className={`emoji-option ${customEmoji === emoji ? 'selected' : ''}`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+              <div className="selected-emoji-preview">
+                Selected: {customEmoji}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Goal</label>
+              <div className="goal-selector">
+                <button
+                  onClick={() => setCustomGoal('higher')}
+                  className={`goal-option ${customGoal === 'higher' ? 'selected' : ''}`}
+                >
+                  <span className="goal-icon">↑</span>
+                  <span className="goal-text">Higher is better</span>
+                  <span className="goal-example">(e.g., Breath hold, Plank)</span>
+                </button>
+                <button
+                  onClick={() => setCustomGoal('lower')}
+                  className={`goal-option ${customGoal === 'lower' ? 'selected' : ''}`}
+                >
+                  <span className="goal-icon">↓</span>
+                  <span className="goal-text">Lower is better</span>
+                  <span className="goal-example">(e.g., Sprint, Race time)</span>
                 </button>
               </div>
-            ) : (
-              <div className="custom-challenge-input">
-                <div className="custom-input-group">
-                  <input
-                    type="text"
-                    placeholder="Enter challenge name"
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    className="custom-name-input"
-                    autoFocus
-                  />
-                  <div className="emoji-selector">
-                    <label>Emoji:</label>
-                    <select
-                      value={customEmoji}
-                      onChange={(e) => setCustomEmoji(e.target.value)}
-                      className="emoji-select"
-                    >
-                      {emojiList.map(emoji => (
-                        <option key={emoji} value={emoji}>
-                          {emoji}
-                        </option>
-                      ))}
-                    </select>
-                    <span className="selected-emoji">{customEmoji}</span>
-                  </div>
-                </div>
-                <div className="custom-actions">
-                  <button onClick={addCustomChallenge} className="custom-start-btn">
-                    <Plus size={16} /> Add Challenge
-                  </button>
-                  <button onClick={() => setShowCustomInput(false)} className="custom-cancel-btn">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Challenges Grid */}
-            <div className="challenges-grid">
-              {challenges.map(challenge => {
-                const bestTime = getBestTime(challenge.id);
-                const recentRecords = getRecentRecords(challenge.id, 3);
-                
-                return (
-                  <div
-                    key={challenge.id}
-                    onClick={() => startTimer(challenge)}
-                    className="challenge-card"
-                    style={{ borderColor: challenge.color }}
-                    onMouseEnter={() => setShowDelete(challenge.id)}
-                    onMouseLeave={() => setShowDelete(null)}
-                  >
-                    {showDelete === challenge.id && (
-                      <button
-                        className="delete-challenge-btn"
-                        onClick={(e) => deleteChallenge(challenge.id, e)}
-                        title="Delete challenge"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                    
-                    <div className="challenge-icon-large">{challenge.icon}</div>
-                    <div className="challenge-name">{challenge.name}</div>
-                    <div className="challenge-category-badge">{challenge.category}</div>
-                    
-                    {bestTime ? (
-                      <div className="challenge-best-time">
-                        <Trophy size={16} color="#fbbf24" />
-                        {formatTime(bestTime)}
-                      </div>
-                    ) : (
-                      <div className="challenge-no-record">No record yet</div>
-                    )}
-
-                    {recentRecords.length > 0 && (
-                      <div className="challenge-recent-times">
-                        {recentRecords.map((record, idx) => (
-                          <span key={idx} className="recent-time">
-                            {formatTime(record.time)}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
             </div>
-          </>
-        )}
 
-        {/* Records History */}
-        {!selectedChallenge && records.length > 0 && (
-          <div className="records-history">
-            <h3>Recent History</h3>
-            <div className="records-list">
-              {records.slice(0, 10).map((record, index) => {
-                const challenge = challenges.find(c => c.id === record.challengeId);
-                return (
-                  <div key={index} className="record-item">
-                    <div className="record-info">
-                      <span className="record-icon">{challenge?.icon || '⚡'}</span>
-                      <div>
-                        <div className="record-name">{challenge?.name || 'Custom Challenge'}</div>
-                        <div className="record-date">{record.date.toLocaleDateString()} {record.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                      </div>
-                    </div>
-                    <div className="record-time-section">
-                      <span className="record-time">{formatTime(record.time)}</span>
-                      <button 
-                        onClick={() => deleteRecord(index)} 
-                        className="delete-record-btn"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="modal-actions">
+              <button onClick={addCustomChallenge} className="create-btn">
+                Create Challenge
+              </button>
+              <button onClick={() => setShowCustomForm(false)} className="cancel-btn">
+                Cancel
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Floating Add Button */}
+      {!selectedChallenge && (
+        <button 
+          onClick={() => setShowCustomForm(true)} 
+          className="floating-add-btn"
+        >
+          <Plus size={24} />
+        </button>
+      )}
     </div>
   );
 };
