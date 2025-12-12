@@ -17,6 +17,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
     { id: 'tasks', name: 'Tasks', icon: CheckSquare, color: '#0d9488' },
     { id: 'screentime', name: 'Screen Time', icon: Smartphone, color: '#6366f1' },
     { id: 'growth', name: 'Growth', icon: TrendingUp, color: '#8b5cf6' },
+    { id: 'timetable', name: 'Time Table', icon: Clock, color: '#f59e0b' },
   ];
 
   return (

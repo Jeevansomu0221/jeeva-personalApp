@@ -10,14 +10,24 @@ import Goals from './components/Goals/Goals';
 import Tasks from './components/Tasks/Tasks';
 import ScreenTime from './components/ScreenTime/ScreenTime';
 import Growth from './components/Growth/Growth';
+import TimeTable from './components/TimeTable/TimeTable';
 
-type Screen = 'home' | 'clock' | 'alarm' | 'timer' | 'Notes' | 'music' | 'goals' | 'tasks' | 'screentime' | 'growth';
+type Screen = 'home' | 'clock' | 'alarm' | 'timer' | 'Notes' | 'music' | 'goals' | 'tasks' | 'screentime' | 'growth' | 'timetable';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
 
   const handleNavigate = (screen: string) => {
-    setCurrentScreen(screen as Screen);
+    // Type assertion to ensure screen is a valid Screen type
+    if (isValidScreen(screen)) {
+      setCurrentScreen(screen);
+    }
+  };
+
+  // Helper function to check if a string is a valid Screen type
+  const isValidScreen = (screen: string): screen is Screen => {
+    const validScreens: Screen[] = ['home', 'clock', 'alarm', 'timer', 'Notes', 'music', 'goals', 'tasks', 'screentime', 'growth', 'timetable'];
+    return validScreens.includes(screen as Screen);
   };
 
   const renderScreen = () => {
@@ -42,6 +52,8 @@ const App: React.FC = () => {
         return <ScreenTime onBack={() => setCurrentScreen('home')} />;
       case 'growth':
         return <Growth onBack={() => setCurrentScreen('home')} />;
+      case 'timetable':
+        return <TimeTable />;
       default:
         return <Home onNavigate={handleNavigate} />;
     }
